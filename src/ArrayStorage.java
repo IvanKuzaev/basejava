@@ -7,44 +7,47 @@ public class ArrayStorage {
     private int size;
 
     void clear() {
-        //storage = null;
+        for (int i = 0; i < size; i++) {
+            storage[i] = null;
+        }
         size = 0;
     }
 
     void save(Resume r) {
         storage[size] = r;
-        size += 1;
+        size++;
     }
 
     private int find(String uuid) {
-        int r = -1;
-        for (int i = 0; i < size; i += 1)
+        for (int i = 0; i < size; i++) {
             if (storage[i].uuid.equals(uuid)) {
-                r = i;
-                break;
+                return i;
             }
-        return r;
+        }
+        return -1;
     }
 
     private void shift(int i) {
-        for (; storage[i + 1] != null; i += 1)
+        for (; storage[i + 1] != null; i++) {
             storage[i] = storage[i + 1];
+        }
     }
 
     Resume get(String uuid) {
         int i = find(uuid);
-        if (i > -1)
+        if (i > -1) {
             return storage[i];
-        else
+        }
+        else {
             return null;
+        }
     }
 
     void delete(String uuid) {
         int i = find(uuid);
         if (i > -1) {
-            //storage[i] = null;
             shift(i);
-            size -= 1;
+            size--;
         }
     }
 
@@ -53,8 +56,9 @@ public class ArrayStorage {
      */
     Resume[] getAll() {
         Resume[] all = new Resume[size];
-        for (int i = 0; i < size; i += 1)
+        for (int i = 0; i < size; i++) {
             all[i] = storage[i];
+        }
         return all;
     }
 
