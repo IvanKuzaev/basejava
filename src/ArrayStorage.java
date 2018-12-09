@@ -78,14 +78,6 @@ public class ArrayStorage {
         }
     }
 
-    //use this method to delete an element if order is relevant
-    private void shift(int i) {
-        for (; (storage[i + 1] != null) & (i + 1 < MAX); i++) {
-            storage[i] = storage[i + 1];
-        }
-        storage[i] = null;
-    }
-
     /**
      * @return array, contains only Resumes in storage (without null)
      */
