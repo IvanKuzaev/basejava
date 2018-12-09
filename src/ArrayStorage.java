@@ -1,6 +1,8 @@
 /**
  * Array based storage for Resumes
  */
+import java.util.Arrays;
+
 public class ArrayStorage {
 
     static private final int MAX = 10000;
@@ -10,15 +12,8 @@ public class ArrayStorage {
     private int size;
 
     void clear() {
-        for (int i = 0; i < size; i++) {
-            storage[i] = null;
-        }
+        Arrays.fill(storage, 0, size, null);
         size = 0;
-    }
-
-    void save(Resume r) {
-        storage[size] = r;
-        size++;
     }
 
     private int find(String uuid) {
@@ -30,9 +25,35 @@ public class ArrayStorage {
         return -1;
     }
 
+    void save(Resume r) {
+        int i = find(r.uuid);
+        if (i == -1) {
+            if (size < MAX) {
+                storage[size] = r;
+                size++;
+            }
+            else {
+                System.out.println("save() method: storage array overflow.");
+            }
+        }
+        else {
+            System.out.println("save() method: resume "+r.uuid+" is in database, use update() method.");
+        }
+    }
+
     private void shift(int i) {
         for (; storage[i + 1] != null; i++) {
             storage[i] = storage[i + 1];
+        }
+    }
+
+    void update(Resume r) {
+        int i = find(r.uuid);
+        if (i > -1) {
+            storage[i] = r;
+        }
+        else {
+            System.out.println("update() method: resume "+r.uuid+" not found.");
         }
     }
 
@@ -42,6 +63,7 @@ public class ArrayStorage {
             return storage[i];
         }
         else {
+            System.out.println("get() method: resume "+uuid+" not found.");
             return null;
         }
     }
@@ -52,17 +74,16 @@ public class ArrayStorage {
             shift(i);
             size--;
         }
+        else {
+            System.out.println("delete() method: resume "+uuid+" not found.");
+        }
     }
 
     /**
      * @return array, contains only Resumes in storage (without null)
      */
     Resume[] getAll() {
-        Resume[] all = new Resume[size];
-        for (int i = 0; i < size; i++) {
-            all[i] = storage[i];
-        }
-        return all;
+        return Arrays.<Resume>copyOf(storage, size);
     }
 
     int size() {
