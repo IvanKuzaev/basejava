@@ -6,100 +6,19 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.Arrays;
-
 public class ArrayStorage extends AbstractArrayStorage {
-//public class ArrayStorage implements Storage {
 
-    static private final int STORAGE_LIMIT = 10_000;
-
-    Resume[] storage = new Resume[STORAGE_LIMIT];
-
-    private int size;
-
-    /**
-     * clears storage by erasing all object references
-     */
-    public void clear() {
-        Arrays.fill(storage, 0, size, null);
-        size = 0;
+    @Override
+    protected void insertElement(Resume r, int index) {
+        storage[size] = r;
     }
 
-    /**
-     * adds a new resume to the and of storage
-     */
-    public void save(Resume r) {
-        int i = getIndex(r.getUuid());
-        if (i == -1) {
-            if (size < STORAGE_LIMIT) {
-                storage[size] = r;
-                size++;
-            } else {
-                System.out.println("save() method: storage array overflow.");
-            }
-        } else {
-            System.out.println("save() method: resume " + r.getUuid() + " is in database, use update() method.");
-        }
+    @Override
+    protected void deleteElement(int index) {
+        storage[index] = storage[size - 1];
     }
 
-    /**
-     * replaces a resume in storage with a new one with the same uuid
-     */
-    public void update(Resume r) {
-        int i = getIndex(r.getUuid());
-        if (i > -1) {
-            storage[i] = r;
-        } else {
-            System.out.println("update() method: resume " + r.getUuid() + " not found.");
-        }
-    }
-
-    /**
-     * @return Resume, instance of Resume with specified uuid, if not found, returns null
-     */
-    public Resume get(String uuid) {
-        int i = getIndex(uuid);
-        if (i > -1) {
-            return storage[i];
-        } else {
-            System.out.println("get() method: resume " + uuid + " not found.");
-            return null;
-        }
-    }
-
-    /**
-     * deletes resume with particular uuid if found, doesn't preserve order of elements
-     */
-    public void delete(String uuid) {
-        int i = getIndex(uuid);
-        if (i > -1) {
-            if (i < size - 1) {
-                storage[i] = storage[size - 1];
-            }
-            storage[size - 1] = null;
-            size--;
-        } else {
-            System.out.println("delete() method: resume " + uuid + " not found.");
-        }
-    }
-
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
-    public Resume[] getAll() {
-        return Arrays.copyOf(storage, size);
-    }
-
-    /**
-     * @return int, amount of resumes in storage, also the next free index to fill
-     */
-    public int size() {
-        return size;
-    }
-
-    /**
-     * @return int, index in storage of found resume, if no resume found, returns -1
-     */
+    @Override
     protected int getIndex(String uuid) {
         for (int i = 0; i < size; i++) {
             if (storage[i].getUuid().equals(uuid)) {

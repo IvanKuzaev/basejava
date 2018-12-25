@@ -5,46 +5,28 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.Arrays;
 
 public class SortedArrayStorage extends AbstractArrayStorage{
-//    @Override
-    public void clear() {
 
+    @Override
+    protected void insertElement(Resume r, int index) {
+        index = -(index + 1);
+        for (int i = size - 1; i >= index; i--) {
+            storage[i + 1] = storage[i];
+        }
+        storage[index] = r;
     }
 
-//    @Override
-    public void update(Resume r) {
-
+    @Override
+    protected void deleteElement(int index) {
+        for (int i = index; i < size; i++) {
+            storage[i] = storage[i + 1];
+        }
     }
 
-//    @Override
-    public void save(Resume r) {
-
-    }
-
-//    @Override
-    public void delete(String uuid) {
-
-    }
-
-//    @Override
-    public Resume[] getAll() {
-        return new Resume[0];
-    }
-
-//    @Override
+    @Override
     protected int getIndex(String uuid) {
         Resume searchKey = new Resume();
         searchKey.setUuid(uuid);
         return Arrays.binarySearch(storage, 0, size, searchKey);
     }
 
-    /**
-     * shifts a subarray of storage
-     * @param s shift distance in elements
-     *          by s > 0 shifts to the right, opening a gap
-     *          by s < 0 shifts to the left, overwriting elements
-     * @param i the index of the subarray's start element
-     */
-    private void shift(int s, int i) {
-
-    }
 }
