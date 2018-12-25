@@ -2,20 +2,25 @@
  * Array based storage for Resumes
  */
 
+package ru.javawebinar.basejava.storage;
+
+import ru.javawebinar.basejava.model.Resume;
+
 import java.util.Arrays;
 
-public class ArrayStorage {
+public class ArrayStorage extends AbstractArrayStorage {
+//public class ArrayStorage implements Storage {
 
-    static private final int MAX = 10_000;
+    static private final int STORAGE_LIMIT = 10_000;
 
-    Resume[] storage = new Resume[MAX];
+    Resume[] storage = new Resume[STORAGE_LIMIT];
 
     private int size;
 
     /**
      * clears storage by erasing all object references
      */
-    void clear() {
+    public void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
     }
@@ -23,10 +28,10 @@ public class ArrayStorage {
     /**
      * adds a new resume to the and of storage
      */
-    void save(Resume r) {
+    public void save(Resume r) {
         int i = getIndex(r.getUuid());
         if (i == -1) {
-            if (size < MAX) {
+            if (size < STORAGE_LIMIT) {
                 storage[size] = r;
                 size++;
             } else {
@@ -40,7 +45,7 @@ public class ArrayStorage {
     /**
      * replaces a resume in storage with a new one with the same uuid
      */
-    void update(Resume r) {
+    public void update(Resume r) {
         int i = getIndex(r.getUuid());
         if (i > -1) {
             storage[i] = r;
@@ -52,7 +57,7 @@ public class ArrayStorage {
     /**
      * @return Resume, instance of Resume with specified uuid, if not found, returns null
      */
-    Resume get(String uuid) {
+    public Resume get(String uuid) {
         int i = getIndex(uuid);
         if (i > -1) {
             return storage[i];
@@ -65,7 +70,7 @@ public class ArrayStorage {
     /**
      * deletes resume with particular uuid if found, doesn't preserve order of elements
      */
-    void delete(String uuid) {
+    public void delete(String uuid) {
         int i = getIndex(uuid);
         if (i > -1) {
             if (i < size - 1) {
@@ -81,21 +86,21 @@ public class ArrayStorage {
     /**
      * @return array, contains only Resumes in storage (without null)
      */
-    Resume[] getAll() {
+    public Resume[] getAll() {
         return Arrays.copyOf(storage, size);
     }
 
     /**
      * @return int, amount of resumes in storage, also the next free index to fill
      */
-    int size() {
+    public int size() {
         return size;
     }
 
     /**
      * @return int, index in storage of found resume, if no resume found, returns -1
      */
-    private int getIndex(String uuid) {
+    protected int getIndex(String uuid) {
         for (int i = 0; i < size; i++) {
             if (storage[i].getUuid().equals(uuid)) {
                 return i;
