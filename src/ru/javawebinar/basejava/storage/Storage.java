@@ -4,8 +4,6 @@ import ru.javawebinar.basejava.model.Resume;
 
 public interface Storage {
 
-//    int SOME_CONSTANT = 123;
-
     void clear();
 
     void update(Resume r);
