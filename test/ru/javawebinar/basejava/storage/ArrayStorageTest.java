@@ -1,14 +1,11 @@
 package ru.javawebinar.basejava.storage;
 
-import org.junit.BeforeClass;
+import ru.javawebinar.basejava.model.Resume;
 
 public class ArrayStorageTest extends AbstractArrayStorageTest{
 
     public ArrayStorageTest() { storage = new ArrayStorage(); }
 
-    @BeforeClass
-    public static void info() {
-        System.out.println("Unit testing of ArrayStorage class.");
-    }
+    protected void prepareElements(Resume[] resumes) { }
 
 }

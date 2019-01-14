@@ -8,89 +8,85 @@ import org.junit.Before;
 import org.junit.Test;
 
 public abstract class AbstractArrayStorageTest {
-    //hardcoded values for testing
-    static final private String uuidExist1 = "uuid01", uuidExist2 = "uuid02", uuidExist3 = "uuid03", uuidExist4 = "uuid04";
-    static final private String uuidNew = "uuid_new";
-    static final private String uuidNotExist = "uuid_not_exist";
+
+    private static final String uuid01 = "uuid01", uuid02 = "uuid02", uuid03 = "uuid03", uuid04 = "uuid04", uuid05 = "uuid05";
+    private static final String uuidNew = "uuid_new";
+    private static final String uuidNotExist = "uuid_not_exist";
+
+    private static final Resume resume1 = new Resume(uuid01);
+    private static final Resume resume2 = new Resume(uuid02);
+    private static final Resume resume3 = new Resume(uuid03);
+    private static final Resume resume4 = new Resume(uuid04);
+    private static final Resume resume5 = new Resume(uuid05);
+    private static final Resume resumeNew = new Resume(uuidNew);
+    private static final Resume resumeNotExist = new Resume(uuidNotExist);
+
+
+    protected static final Resume[] resumes = { resume1, resume2, resume3, resume4 };
+    private static final int size = resumes.length;
+
+    private String uuidExist;
+    private Resume resumeExist;
+    private int element;
 
     protected Storage storage = null;
 
     @Before
     public void setUp() throws Exception {
         storage.clear();
-        storage.save(new Resume(uuidExist1));
-        storage.save(new Resume(uuidExist2));
-        storage.save(new Resume(uuidExist3));
-        storage.save(new Resume(uuidExist4));
+        for (int i = 0; i < size; i++) {
+            storage.save(resumes[i]);
+        }
+        element = (int)Math.random() * size;
+        resumeExist = resumes[element];
+        uuidExist = resumeExist.getUuid();
     }
 
     @Test
     public void clear() throws Exception {
         storage.clear();
         Assert.assertEquals("Testing method clear(): size equals non zero.", 0, storage.size());
-        //additional testing on empty storage
-        storage.clear();
-        Assert.assertEquals("Testing method clear(): size equals non zero.", 0, storage.size());
     }
 
     @Test
     public void save() throws Exception {
-        Resume resume = new Resume(uuidNew);
         int sizeBefore = storage.size();
-        storage.save(resume);
-        int sizeAfter = storage.size();
-        Assert.assertEquals("Testing method save(): size didn't increment.", sizeBefore + 1, sizeAfter);
-        Resume resumeAfterSave = storage.get(uuidNew);
-        Assert.assertEquals("Testing method save(): invalid Resume reference.", resume, resumeAfterSave);
+        storage.save(resumeNew);
+        Assert.assertEquals("Testing method save(): size didn't increment.", sizeBefore + 1, storage.size());
+        Assert.assertSame("Testing method save(): invalid Resume reference.", resumeNew, storage.get(uuidNew));
     }
 
     @Test(expected = StorageException.class)
     public void saveStorageOverflow() throws Exception {
-        //make storage overflow
         try {
-            long index = 0;
-            while (true) {
-                storage.save(new Resume("dummy" + index));
+            for (int i = size + 1; i <= AbstractArrayStorage.STORAGE_LIMIT; i++) {
+                storage.save(new Resume("dummy" + i));
             }
-        } catch (Exception e) {
+        } catch (StorageException e) {
+            Assert.fail("Testing method save(): inappropriate storage overflow.");
         }
-        //now let's try to save into the overflood storage
-        storage.save(new Resume(uuidNew));//exception must be thrown
+        storage.save(resumeNew);
     }
 
     @Test(expected = ExistStorageException.class)
     public void saveExist() throws Exception {
-        storage.save(new Resume(uuidExist1));//exception must be thrown
+        storage.save(resumeExist);
     }
 
     @Test
     public void update() throws Exception {
-        Resume resume = new Resume(uuidExist1);
-        int sizeBefore = storage.size();
-        storage.update(resume);
-        int sizeAfter = storage.size();
-        Assert.assertEquals("Testing method update(): sizes don't match.", sizeBefore, sizeAfter);
-        Resume resumeAfterUpdate = storage.get(uuidExist1);
-        Assert.assertEquals("Testing method update(): invalid Resume reference.", resume, resumeAfterUpdate);
+        storage.update(resumeExist);
+        Assert.assertSame("Testing method update(): invalid Resume reference.", resumeExist, storage.get(uuidExist));
     }
 
     @Test(expected = NotExistStorageException.class)
     public void updateNotExist() throws Exception {
-        storage.update(new Resume(uuidNotExist));//exception must be thrown
+        storage.update(resumeNotExist);
     }
 
     @Test
     public void get() throws Exception {
-        //check for existing element
-        int sizeBefore = storage.size();
-        Resume resume = storage.get(uuidExist1);
-        int sizeAfter = storage.size();
-        Assert.assertEquals("Testing method get(): sizes don't match.", sizeBefore, sizeAfter);
-        //let's check for new element with reference control
-        Resume resumeNew = new Resume(uuidNew);
-        storage.save(resumeNew);
-        Resume resumeAfterSave = storage.get(uuidNew);
-        Assert.assertEquals("Testing method get(): invalid Resume reference.", resumeNew, resumeAfterSave);
+        Assert.assertSame("Testing method get(): invalid Resume reference.", resumeExist, storage.get(uuidExist));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -98,39 +94,29 @@ public abstract class AbstractArrayStorageTest {
         storage.get(uuidNotExist);
     }
 
-    @Test(expected = NotExistStorageException.class)
+    @Test
     public void delete() throws Exception {
         int sizeBefore = storage.size();
-        storage.delete(uuidExist1);
-        int sizeAfter = storage.size();
-        Assert.assertEquals("Testing method delete(): size didn't decrement.", sizeBefore, sizeAfter+1);
-        //let's try to get non existing element
-        Resume stubResume = storage.get(uuidExist1);//exception must be thrown
+        storage.delete(uuidExist);
+        Assert.assertEquals("Testing method delete(): size didn't decrement.", sizeBefore, storage.size() + 1);
     }
 
     @Test(expected = NotExistStorageException.class)
     public void deleteNotExist() throws Exception {
-        storage.delete(uuidNotExist);//exception must be thrown
+        storage.delete(uuidNotExist);
     }
+
+    protected abstract void prepareElements(Resume[] resumes);
 
     @Test
     public void getAll() throws Exception {
-        Resume[] resumes;
-        resumes = storage.getAll();
-        Assert.assertEquals("Testing method getAll(): sizes don't match.", 4, resumes.length);
-        for (Resume resume : resumes) {
-            String uuid = resume.getUuid();
-            if (!uuid.equals(uuidExist1) &&
-                    !uuid.equals(uuidExist2) &&
-                    !uuid.equals(uuidExist3) &&
-                    !uuid.equals(uuidExist4)) {
-                Assert.fail("Testing method getAll(): elements are not identical.");
-            }
-        }
+        prepareElements(resumes);
+        Assert.assertArrayEquals("Testing method getAll(): elements are not identical.", resumes, storage.getAll());
     }
 
     @Test
     public void size() throws Exception {
-        Assert.assertEquals("Testing method size(): invalid size value.", 4, storage.size());
+        Assert.assertEquals("Testing method size(): invalid size value.", size, storage.size());
     }
+
 }

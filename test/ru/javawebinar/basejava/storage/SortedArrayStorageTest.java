@@ -1,6 +1,8 @@
 package ru.javawebinar.basejava.storage;
 
-import org.junit.BeforeClass;
+import ru.javawebinar.basejava.model.Resume;
+
+import java.util.Arrays;
 
 public class SortedArrayStorageTest extends AbstractArrayStorageTest{
 
@@ -8,9 +10,6 @@ public class SortedArrayStorageTest extends AbstractArrayStorageTest{
         storage = new SortedArrayStorage();
     }
 
-    @BeforeClass
-    public static void info() {
-        System.out.println("Unit testing of SortedArrayStorage class.");
-    }
+    protected void prepareElements(Resume[] resumes) { Arrays.sort(resumes); }
 
 }
