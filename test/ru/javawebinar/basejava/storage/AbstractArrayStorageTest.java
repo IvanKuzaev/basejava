@@ -37,7 +37,7 @@ public abstract class AbstractArrayStorageTest {
         for (int i = 0; i < size; i++) {
             storage.save(resumes[i]);
         }
-        element = (int)Math.random() * size;
+        element = (int)(Math.random() * size);
         resumeExist = resumes[element];
         uuidExist = resumeExist.getUuid();
     }
