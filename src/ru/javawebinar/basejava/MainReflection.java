@@ -12,7 +12,7 @@ public class MainReflection {
         System.out.println(field.getName());
         System.out.println(field.get(r));
         field.set(r, "new_uuid");
-        Method method = r.getClass().getDeclaredMethod("toString", null);
+        Method method = r.getClass().getDeclaredMethod("toString");
         System.out.println(method.invoke(r));
     }
 }
