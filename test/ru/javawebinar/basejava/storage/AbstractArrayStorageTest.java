@@ -19,7 +19,6 @@ public abstract class AbstractArrayStorageTest {
     private static final Resume RESUME_2 = new Resume(UUID_02);
     private static final Resume RESUME_3 = new Resume(UUID_03);
     private static final Resume RESUME_4 = new Resume(UUID_04);
-    private static final Resume RESUME_5 = new Resume(UUID_05);
 
     private static final String UUID_NEW = "uuid_new";
     private static final Resume RESUME_NEW = new Resume(UUID_NEW);
@@ -34,6 +33,7 @@ public abstract class AbstractArrayStorageTest {
 
     @Before
     public void setUp() throws Exception {
+        System.out.println("storage.getClass() = "+storage.getClass());
         storage.clear();
         for (int i = 0; i < SIZE; i++) {
             storage.save(RESUMES[i]);
