@@ -8,11 +8,12 @@ import java.util.Arrays;
 /**
  * Array based storage for Resumes
  */
-public abstract class AbstractArrayStorage implements Storage {
+public abstract class AbstractArrayStorage extends AbstractStorage {
     protected static final int STORAGE_LIMIT = 10_000;
 
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
-    protected int size = 0;
+
+    private int indexIntern;//saves the result of last getIndex() call, invoked in resumeExist() method; non direct value transfer for *Intern methods
 
     /**
      * inserts an element into the storage
@@ -23,64 +24,50 @@ public abstract class AbstractArrayStorage implements Storage {
     protected abstract void insertElement(Resume resume, int index);
 
     /**
-     * deletes an element at the specified index in the storage
-     * @param index index of an element, must be from 0 to size-1
+     * deletes an element at the specified indexIntern in the storage
+     * @param index indexIntern of an element, must be from 0 to size-1
      */
     protected abstract void deleteElement(int index);
 
     /**
-     * @return int, index in storage of found resume, if no resume found, return value is implementation dependent
+     * @return int, indexIntern in storage of found resume, if no resume found, return value is implementation dependent
      */
     protected abstract int getIndex(String uuid);
 
-    public void clear() {
+    protected boolean resumeExist(String uuid) {
+        indexIntern = getIndex(uuid);
+        if (indexIntern >= 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void clearIntern() {
         Arrays.fill(storage, 0, size, null);
-        size = 0;
     }
 
-    public void save(Resume resume) {
-        int index = getIndex(resume.getUuid());
-        if (index < 0) {
-            if (size < STORAGE_LIMIT) {
-                insertElement(resume, index);
-                size++;
-            } else {
-                throw new StorageException("Storage overflow", resume.getUuid());
-            }
+    public void saveIntern(Resume resume) {
+        if (size < STORAGE_LIMIT) {
+            insertElement(resume, indexIntern);
         } else {
-            throw new ExistStorageException(resume.getUuid());
+            throw new StorageException("Storage overflow", resume.getUuid());
         }
     }
 
-    public void update(Resume resume) {
-        int index = getIndex(resume.getUuid());
-        if (index > -1) {
-            storage[index] = resume;
-        } else {
-            throw new NotExistStorageException(resume.getUuid());
-        }
+    public void updateIntern(Resume resume) {
+        storage[indexIntern] = resume;
     }
 
-    public Resume get(String uuid) {
-        int index = getIndex(uuid);
-        if (index > -1) {
-            return storage[index];
-        } else {
-            throw new NotExistStorageException(uuid);
-        }
+    public Resume getIntern(String uuid) {
+        return storage[indexIntern];
     }
 
-    public void delete(String uuid) {
-        int index = getIndex(uuid);
-        if (index > -1) {
-            if (index < size - 1) {
-                deleteElement(index);
-            }
-            storage[size - 1] = null;
-            size--;
-        } else {
-            throw new NotExistStorageException(uuid);
+    public void deleteIntern(String uuid) {
+        if (indexIntern < size - 1) {
+            deleteElement(indexIntern);
         }
+        storage[size - 1] = null;
     }
 
     /**
@@ -88,10 +75,6 @@ public abstract class AbstractArrayStorage implements Storage {
      */
     public Resume[] getAll() {
         return Arrays.copyOf(storage, size);
-    }
-
-    public int size() {
-        return size;
     }
 
 }
