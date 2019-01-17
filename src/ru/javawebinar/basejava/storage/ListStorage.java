@@ -6,7 +6,11 @@ import java.util.LinkedList;
 
 public class ListStorage extends AbstractStorage {
 
-    protected LinkedList<Resume> storage = new LinkedList();
+    protected LinkedList<Resume> storage;
+
+    public ListStorage() {
+        storage = new LinkedList<Resume>();
+    }
 
     private int getIndex(String uuid) {
         for(Resume resume : storage) {
