@@ -2,56 +2,70 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class ListStorage extends AbstractStorage {
 
-    protected LinkedList<Resume> storage = new LinkedList<Resume>();
+    protected List<Resume> storage = new ArrayList<>();
 
-    private int indexIntern;//saves the result of last getIndex() call, invoked in resumeExist() method; non direct value transfer for *Intern methods
-
-    private int getIndex(String uuid) {
-        for(Resume resume : storage) {
+    @Override
+    protected Object getSearchKey(String uuid) {
+        ListIterator<Resume> iterator = storage.listIterator();
+        int index = 0;
+        while(iterator.hasNext()) {
+            Resume resume = iterator.next();
             if (uuid.equals(resume.getUuid()))
-                return storage.indexOf(resume);
+                return index;
+            index = iterator.nextIndex();
         }
         return -1;
     }
 
     @Override
-    protected boolean resumeExist(String uuid) {
-        indexIntern = getIndex(uuid);
-        return indexIntern >= 0 ? true : false;
+    protected boolean resumeExist(Object key) {
+        int index = (int)key;
+        return index >= 0;
     }
 
     @Override
-    protected void clearIntern() {
+    public void clear() {
         storage.clear();
     }
 
     @Override
-    protected void updateIntern(Resume resume) {
-        storage.set(indexIntern, resume);
+    protected void updateIntern(Resume resume, Object key) {
+        int index = (int)key;
+        storage.set(index, resume);
     }
 
     @Override
-    protected void saveIntern(Resume resume) {
+    protected void saveIntern(Resume resume, Object key) {
         storage.add(resume);
     }
 
     @Override
-    protected Resume getIntern(String uuid) {
-        return storage.get(indexIntern);
+    protected Resume getIntern(Object key) {
+        int index = (int)key;
+        return storage.get(index);
     }
 
     @Override
-    protected void deleteIntern(String uuid) {
-        storage.remove(indexIntern);
+    protected void deleteIntern(Object key) {
+        int index = (int)key;
+        storage.remove(index);
     }
 
     @Override
     public Resume[] getAll() {
         return storage.toArray(new Resume[1]);
+    }
+
+    @Override
+    public int size() {
+        return storage.size();
     }
 
 }
