@@ -29,15 +29,9 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
      */
     protected abstract void deleteElement(int index);
 
-    /**
-     * @return Integer, index in storage of found resume, if no resume found, return value is implementation dependent
-     */
-    @Override
-    protected abstract Object getSearchKey(String uuid);
-
     @Override
     protected boolean resumeExist(Object key) {
-        int index = (Integer)key;
+        int index = (int)key;
         return index >= 0;
     }
 
@@ -49,7 +43,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     @Override
     public void saveIntern(Resume resume, Object key) {
-        int index = (Integer)key;
+        int index = (int)key;
         if (size < STORAGE_LIMIT) {
             insertElement(resume, index);
             size++;
@@ -60,19 +54,19 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     @Override
     public void updateIntern(Resume resume, Object key) {
-        int index = (Integer)key;
+        int index = (int)key;
         storage[index] = resume;
     }
 
     @Override
     public Resume getIntern(Object key) {
-        int index = (Integer)key;
+        int index = (int)key;
         return storage[index];
     }
 
     @Override
     public void deleteIntern(Object key) {
-        int index = (Integer)key;
+        int index = (int)key;
         if (index < size - 1) {
             deleteElement(index);
         }

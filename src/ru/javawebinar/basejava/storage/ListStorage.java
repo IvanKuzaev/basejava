@@ -13,13 +13,11 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected Object getSearchKey(String uuid) {
-        ListIterator<Resume> iterator = storage.listIterator();
-        int index = 0;
-        while(iterator.hasNext()) {
-            Resume resume = iterator.next();
+        for (int index = 0; index < storage.size(); index++) {
+            Resume resume = storage.get(index);
             if (uuid.equals(resume.getUuid()))
                 return index;
-            index = iterator.nextIndex();
+
         }
         return -1;
     }
@@ -60,7 +58,7 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     public Resume[] getAll() {
-        return storage.toArray(new Resume[1]);
+        return storage.toArray(new Resume[storage.size()]);
     }
 
     @Override
