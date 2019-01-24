@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 public abstract class AbstractStorageTest {
 
@@ -95,11 +96,13 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    public void getAll() throws Exception {
-        Resume[] resumes = storage.getAll();
-        Arrays.sort(resumes);
+    public void getAllSorted() throws Exception {
+        List<Resume> resumesList = storage.getAllSorted();
+        Resume[] resumes = new Resume[resumesList.size()];
+        resumesList.toArray(resumes);
+//        Arrays.sort(resumes);
         Arrays.sort(RESUMES);
-        Assert.assertArrayEquals("Testing method getAll(): elements are not identical.", RESUMES, resumes);
+        Assert.assertArrayEquals("Testing method getAllSorted(): elements are not identical.", RESUMES, resumes);
     }
 
     @Test

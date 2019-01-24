@@ -26,7 +26,7 @@ public class MapStorage extends AbstractStorage {
 
     @Override
     protected void updateIntern(Resume resume, Object key) {
-        storage.put((String)key, resume);
+        storage.put((String) key, resume);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    public Resume[] getAll() {
+    protected Resume[] getAll() {
         return storage.values().toArray(new Resume[storage.size()]);
     }
 

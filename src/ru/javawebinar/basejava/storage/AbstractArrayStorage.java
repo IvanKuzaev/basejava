@@ -30,6 +30,9 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected abstract void deleteElement(int index);
 
     @Override
+    protected abstract Integer getSearchKey(String uuid);
+
+    @Override
     protected boolean resumeExist(Object key) {
         int index = (int)key;
         return index >= 0;
@@ -78,7 +81,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
      * @return array, contains only Resumes in storage (without null)
      */
     @Override
-    public Resume[] getAll() {
+    protected Resume[] getAll() {
         return Arrays.copyOf(storage, size);
     }
 

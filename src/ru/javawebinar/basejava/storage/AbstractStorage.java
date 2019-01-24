@@ -3,11 +3,27 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.exception.*;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
 public abstract class AbstractStorage implements Storage {
 
     protected abstract Object getSearchKey(String uuid);
 
     protected abstract boolean resumeExist(Object key);
+
+    private static final Comparator<Resume> RESUME_COMPARATOR = new Comparator<Resume>() {
+        @Override
+        public int compare(Resume r1, Resume r2) {
+            int cName = r1.getFullName().compareTo(r2.getFullName());
+            if (cName != 0) {
+                return cName;
+            } else {
+                return r1.getUuid().compareTo(r2.getUuid());
+            }
+        }
+    };
 
     public abstract void clear();
 
@@ -57,7 +73,15 @@ public abstract class AbstractStorage implements Storage {
 
     protected abstract void deleteIntern(Object key);
 
-    public abstract Resume[] getAll();
+    protected abstract Resume[] getAll();
+
+    //return list, sorted by fullName
+    public List<Resume> getAllSorted() {
+        Resume[] resumes = getAll();
+        Arrays.sort(resumes, RESUME_COMPARATOR);
+        return Arrays.asList(resumes);
+    }
+
 
     public abstract int size();
 
