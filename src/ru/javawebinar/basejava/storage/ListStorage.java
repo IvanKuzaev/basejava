@@ -3,9 +3,7 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 public class ListStorage extends AbstractStorage {
 
@@ -13,19 +11,18 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected Integer getSearchKey(String uuid) {
-        for (int index = 0; index < storage.size(); index++) {
-            Resume resume = storage.get(index);
+        for (int i = 0; i < storage.size(); i++) {
+            Resume resume = storage.get(i);
             if (uuid.equals(resume.getUuid()))
-                return index;
+                return i;
 
         }
         return -1;
     }
 
     @Override
-    protected boolean resumeExist(Object key) {
-        int index = (int)key;
-        return index >= 0;
+    protected boolean isResumeExist(Object index) {
+        return (int)index >= 0;
     }
 
     @Override
@@ -34,26 +31,23 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected void updateIntern(Resume resume, Object key) {
-        int index = (int)key;
-        storage.set(index, resume);
+    protected void updateInternal(Resume resume, Object index) {
+        storage.set((int)index, resume);
     }
 
     @Override
-    protected void saveIntern(Resume resume, Object key) {
+    protected void saveInternal(Resume resume, Object key) {
         storage.add(resume);
     }
 
     @Override
-    protected Resume getIntern(Object key) {
-        int index = (int)key;
-        return storage.get(index);
+    protected Resume getInternal(Object index) {
+        return storage.get((int)index);
     }
 
     @Override
-    protected void deleteIntern(Object key) {
-        int index = (int)key;
-        storage.remove(index);
+    protected void deleteInternal(Object index) {
+        storage.remove((int)index);
     }
 
     @Override

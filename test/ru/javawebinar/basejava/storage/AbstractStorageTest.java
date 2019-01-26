@@ -12,26 +12,45 @@ import java.util.List;
 
 public abstract class AbstractStorageTest {
 
-    protected static final String UUID_01 = "uuid04";
-    protected static final String UUID_02 = "uuid03";
-    protected static final String UUID_03 = "uuid02";
-    protected static final String UUID_04 = "uuid01";
+    private static final String UUID_01 = "uuid01";
+    private static final String FULLNAME_01 = "Ivanov Sergei";
+    private static final String UUID_02 = "uuid02";
+    private static final String FULLNAME_02 = "Petrov Vladimir";
+    private static final String UUID_03 = "uuid03";
+    private static final String FULLNAME_03 = "Petrov Vladimir";
+    private static final String UUID_04 = "uuid04";
+    private static final String FULLNAME_04 = "Sidorova Elena ";
 
-    protected static final Resume RESUME_1 = new Resume(UUID_01);
-    protected static final Resume RESUME_2 = new Resume(UUID_02);
-    protected static final Resume RESUME_3 = new Resume(UUID_03);
-    protected static final Resume RESUME_4 = new Resume(UUID_04);
+    private static final Resume RESUME_1 = new Resume(FULLNAME_01, UUID_01);
+    private static final Resume RESUME_2 = new Resume(FULLNAME_02, UUID_02);
+    private static final Resume RESUME_3 = new Resume(FULLNAME_03, UUID_03);
+    private static final Resume RESUME_4 = new Resume(FULLNAME_04, UUID_04);
 
-    protected static final String UUID_NEW = "uuid_new";
-    protected static final Resume RESUME_NEW = new Resume(UUID_NEW);
+    private static final String UUID_NEW = "uuid_new";
+    private static final String FULLNAME_NEW = "John Smith";
+    private static final Resume RESUME_NEW = new Resume(FULLNAME_NEW, UUID_NEW);
 
-    protected static final Resume[] RESUMES = { RESUME_1, RESUME_2, RESUME_3, RESUME_4 };
-    protected static final int SIZE = RESUMES.length;
+    private static final Resume[] RESUMES = { RESUME_4, RESUME_3, RESUME_2, RESUME_1 };
+    private static final int SIZE = RESUMES.length;
 
-    protected static final Resume RESUME_EXIST = RESUMES[0];
-    protected static final String UUID_EXIST = RESUME_EXIST.getUuid();
+    private static final Resume RESUME_EXIST = RESUMES[0];
+    private static final String UUID_EXIST = RESUME_EXIST.getUuid();
+    private static final String FULLNAME_EXIST = RESUME_EXIST.getFullName();
 
     protected Storage storage = null;
+
+    protected AbstractStorageTest(Storage storage) {
+        this.storage = storage;
+    }
+
+    private void printTestResumes() {
+        for (int i = 0 ; i < SIZE; i++) {
+            System.out.println("RESUMES[" + i + "] = " + RESUMES[i]);
+        }
+        System.out.println("RESUME_EXIST = " + RESUME_EXIST);
+        System.out.println("RESUME_NEW = " + RESUME_NEW);
+        System.out.println();
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -62,7 +81,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() throws Exception {
-        Resume resumeUpdated = new Resume(UUID_EXIST);
+        Resume resumeUpdated = new Resume("Ivanova Elena", UUID_EXIST);
         storage.update(resumeUpdated);
         Assert.assertSame("Testing method update(): invalid Resume reference.", resumeUpdated, storage.get(UUID_EXIST));
     }
@@ -101,7 +120,7 @@ public abstract class AbstractStorageTest {
         Resume[] resumes = new Resume[resumesList.size()];
         resumesList.toArray(resumes);
 //        Arrays.sort(resumes);
-        Arrays.sort(RESUMES);
+        Arrays.sort(RESUMES, Resume.COMPARATOR);
         Assert.assertArrayEquals("Testing method getAllSorted(): elements are not identical.", RESUMES, resumes);
     }
 

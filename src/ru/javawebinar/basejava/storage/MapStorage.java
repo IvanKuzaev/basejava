@@ -15,7 +15,7 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected boolean resumeExist(Object key) {
+    protected boolean isResumeExist(Object key) {
         return storage.containsKey(key);
     }
 
@@ -25,22 +25,22 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected void updateIntern(Resume resume, Object key) {
+    protected void updateInternal(Resume resume, Object key) {
         storage.put((String) key, resume);
     }
 
     @Override
-    protected void saveIntern(Resume resume, Object key) {
-        updateIntern(resume, key);
+    protected void saveInternal(Resume resume, Object key) {
+        updateInternal(resume, key);
     }
 
     @Override
-    protected Resume getIntern(Object key) {
+    protected Resume getInternal(Object key) {
         return storage.get(key);
     }
 
     @Override
-    protected void deleteIntern(Object key) {
+    protected void deleteInternal(Object key) {
         storage.remove(key);
     }
 

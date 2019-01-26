@@ -2,15 +2,13 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class MapStorageRemake extends MapStorage {
 
     private class MapEntry {
         String key;
         Resume value;
         boolean isExist;
+
         MapEntry(String key) {
             this.key = key;
             this.value = storage.get(key);
@@ -24,23 +22,23 @@ public class MapStorageRemake extends MapStorage {
     }
 
     @Override
-    protected boolean resumeExist(Object key) {
-        return ((MapEntry)key).isExist;
+    protected boolean isResumeExist(Object key) {
+        return ((MapEntry) key).isExist;
     }
 
     @Override
-    protected void updateIntern(Resume resume, Object key) {
-        storage.put(((MapEntry)key).key, resume);
+    protected void updateInternal(Resume resume, Object key) {
+        storage.put(((MapEntry) key).key, resume);
     }
 
     @Override
-    protected Resume getIntern(Object key) {
-        return ((MapEntry)key).value;
+    protected Resume getInternal(Object key) {
+        return ((MapEntry) key).value;
     }
 
     @Override
-    protected void deleteIntern(Object key) {
-        storage.remove(((MapEntry)key).key);
+    protected void deleteInternal(Object key) {
+        storage.remove(((MapEntry) key).key);
     }
 
 }
