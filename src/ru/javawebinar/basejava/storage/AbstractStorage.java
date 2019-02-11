@@ -1,6 +1,7 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.*;
+import ru.javawebinar.basejava.exception.ExistStorageException;
+import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
@@ -11,36 +12,6 @@ public abstract class AbstractStorage implements Storage {
     protected abstract Object getSearchKey(String uuid);
 
     protected abstract boolean isResumeExist(Object key);
-
-//    private static final Comparator<Resume> RESUME_COMPARATOR = new Comparator<Resume>() {
-//        @Override
-//        public int compare(Resume r1, Resume r2) {
-//            int cName = r1.getFullName().compareTo(r2.getFullName());
-//            if (cName != 0) {
-//                return cName;
-//            } else {
-//                return r1.getUuid().compareTo(r2.getUuid());
-//            }
-//        }
-//    };
-
-    private Object getExistedKey(String uuid) {
-        Object key = getSearchKey(uuid);
-        if (!isResumeExist(key)) {
-            throw new NotExistStorageException(uuid);
-        } else {
-            return key;
-        }
-    }
-
-    private Object getNotExistedKey(String uuid) {
-        Object key = getSearchKey(uuid);
-        if (isResumeExist(key)) {
-            throw new ExistStorageException(uuid);
-        } else {
-            return key;
-        }
-    }
 
     public void update(Resume resume) {
         Object key = getExistedKey(resume.getUuid());
@@ -77,6 +48,24 @@ public abstract class AbstractStorage implements Storage {
         Resume[] resumes = getAll();
         Arrays.sort(resumes, Resume.COMPARATOR);
         return Arrays.asList(resumes);
+    }
+
+    private Object getExistedKey(String uuid) {
+        Object key = getSearchKey(uuid);
+        if (!isResumeExist(key)) {
+            throw new NotExistStorageException(uuid);
+        } else {
+            return key;
+        }
+    }
+
+    private Object getNotExistedKey(String uuid) {
+        Object key = getSearchKey(uuid);
+        if (isResumeExist(key)) {
+            throw new ExistStorageException(uuid);
+        } else {
+            return key;
+        }
     }
 
 }

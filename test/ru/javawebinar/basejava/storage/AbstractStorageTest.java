@@ -12,44 +12,25 @@ import java.util.List;
 
 public abstract class AbstractStorageTest {
 
-    private static final String UUID_01 = "uuid01";
-    private static final String FULLNAME_01 = "Ivanov Sergei";
-    private static final String UUID_02 = "uuid02";
-    private static final String FULLNAME_02 = "Petrov Vladimir";
-    private static final String UUID_03 = "uuid03";
-    private static final String FULLNAME_03 = "Petrov Vladimir";
-    private static final String UUID_04 = "uuid04";
-    private static final String FULLNAME_04 = "Sidorova Elena ";
-
-    private static final Resume RESUME_1 = new Resume(FULLNAME_01, UUID_01);
-    private static final Resume RESUME_2 = new Resume(FULLNAME_02, UUID_02);
-    private static final Resume RESUME_3 = new Resume(FULLNAME_03, UUID_03);
-    private static final Resume RESUME_4 = new Resume(FULLNAME_04, UUID_04);
-
-    private static final String UUID_NEW = "uuid_new";
-    private static final String FULLNAME_NEW = "John Smith";
-    private static final Resume RESUME_NEW = new Resume(FULLNAME_NEW, UUID_NEW);
-
-    private static final Resume[] RESUMES = { RESUME_4, RESUME_3, RESUME_2, RESUME_1 };
+    private static final Resume[] RESUMES = {
+            new Resume("uuid01", "Ivanov Sergei"),
+            new Resume("uuid02", "Petrov Vladimir"),
+            new Resume("uuid03", "Petrov Vladimir"),
+            new Resume("uuid04", "Sidorova Elena"),
+    };
     private static final int SIZE = RESUMES.length;
 
     private static final Resume RESUME_EXIST = RESUMES[0];
     private static final String UUID_EXIST = RESUME_EXIST.getUuid();
-    private static final String FULLNAME_EXIST = RESUME_EXIST.getFullName();
 
-    protected Storage storage = null;
+    private static final String UUID_NEW = "uuid_new";
+    private static final String FULLNAME_NEW = "John Smith";
+    private static final Resume RESUME_NEW = new Resume(UUID_NEW, FULLNAME_NEW);
+
+    protected Storage storage;
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
-    }
-
-    private void printTestResumes() {
-        for (int i = 0 ; i < SIZE; i++) {
-            System.out.println("RESUMES[" + i + "] = " + RESUMES[i]);
-        }
-        System.out.println("RESUME_EXIST = " + RESUME_EXIST);
-        System.out.println("RESUME_NEW = " + RESUME_NEW);
-        System.out.println();
     }
 
     @Before
@@ -81,7 +62,8 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() throws Exception {
-        Resume resumeUpdated = new Resume("Ivanova Elena", UUID_EXIST);
+        Resume resumeUpdated = storage.get(UUID_EXIST);
+        resumeUpdated.setFullName("Ivanova Elena");
         storage.update(resumeUpdated);
         Assert.assertSame("Testing method update(): invalid Resume reference.", resumeUpdated, storage.get(UUID_EXIST));
     }
@@ -105,7 +87,7 @@ public abstract class AbstractStorageTest {
     public void delete() throws Exception {
         int sizeBefore = storage.size();
         storage.delete(UUID_EXIST);
-        Assert.assertEquals("Testing method delete(): size didn't decrement.", sizeBefore, storage.size() + 1);
+        Assert.assertEquals("Testing method delete(): size didn't decrement.", sizeBefore - 1, storage.size());
         storage.delete(UUID_EXIST);
     }
 
@@ -119,14 +101,22 @@ public abstract class AbstractStorageTest {
         List<Resume> resumesList = storage.getAllSorted();
         Resume[] resumes = new Resume[resumesList.size()];
         resumesList.toArray(resumes);
-//        Arrays.sort(resumes);
-        Arrays.sort(RESUMES, Resume.COMPARATOR);
+        Arrays.sort(RESUMES);
         Assert.assertArrayEquals("Testing method getAllSorted(): elements are not identical.", RESUMES, resumes);
     }
 
     @Test
     public void size() throws Exception {
         Assert.assertEquals("Testing method size(): invalid size value.", SIZE, storage.size());
+    }
+
+    private void printTestResumes() {
+        for (int i = 0 ; i < SIZE; i++) {
+            System.out.println("RESUMES[" + i + "] = " + RESUMES[i]);
+        }
+        System.out.println("RESUME_EXIST = " + RESUME_EXIST);
+        System.out.println("RESUME_NEW = " + RESUME_NEW);
+        System.out.println();
     }
 
 }

@@ -17,7 +17,7 @@ public abstract class AbstractArrayStorageTest extends AbstractStorageTest {
         storage.clear();
         try {
             for (int i = 0; i < AbstractArrayStorage.STORAGE_LIMIT; i++) {
-                storage.save(new Resume("John Doe", "dummy" + i));
+                storage.save(new Resume("dummy" + i, "John Doe"));
             }
         } catch (StorageException e) {
             Assert.fail("Testing method save(): inappropriate storage overflow.");
