@@ -5,7 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListStorage extends AbstractStorage {
+public class ListStorage extends AbstractStorage<Integer> {
 
     protected List<Resume> storage = new ArrayList<>();
 
@@ -21,8 +21,8 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected boolean isResumeExist(Object index) {
-        return (int)index >= 0;
+    protected boolean isResumeExist(Integer index) {
+        return (index >= 0);
     }
 
     @Override
@@ -31,23 +31,23 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected void updateInternal(Resume resume, Object index) {
-        storage.set((int)index, resume);
+    protected void updateInternal(Resume resume, Integer index) {
+        storage.set(index, resume);
     }
 
     @Override
-    protected void saveInternal(Resume resume, Object key) {
+    protected void saveInternal(Resume resume, Integer index) {
         storage.add(resume);
     }
 
     @Override
-    protected Resume getInternal(Object index) {
-        return storage.get((int)index);
+    protected Resume getInternal(Integer index) {
+        return storage.get(index);
     }
 
     @Override
-    protected void deleteInternal(Object index) {
-        storage.remove((int)index);
+    protected void deleteInternal(Integer index) {
+        storage.remove((int)index);//without (int) didn't pass test. don't know why...
     }
 
     @Override

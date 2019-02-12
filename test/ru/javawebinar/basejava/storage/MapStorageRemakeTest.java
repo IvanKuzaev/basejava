@@ -1,9 +1,9 @@
 package ru.javawebinar.basejava.storage;
 
-public class MapStorageRemakeTest extends MapStorageTest {
+public class MapStorageRemakeTest extends AbstractMapStorageTest {
 
     public MapStorageRemakeTest() {
-        storage = new MapStorageRemake();
+        super(new MapStorageRemake());
     }
 
 }

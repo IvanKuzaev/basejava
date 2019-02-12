@@ -2,9 +2,9 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-public class MapStorageRemake extends MapStorage {
+public class MapStorageRemake extends AbstractMapStorage<MapStorageRemake.MapEntry> {
 
-    private class MapEntry {
+    class MapEntry {
         String key;
         Resume value;
         boolean isExist;
@@ -22,23 +22,23 @@ public class MapStorageRemake extends MapStorage {
     }
 
     @Override
-    protected boolean isResumeExist(Object key) {
-        return ((MapEntry) key).isExist;
+    protected boolean isResumeExist(MapEntry key) {
+        return key.isExist;
     }
 
     @Override
-    protected void updateInternal(Resume resume, Object key) {
-        storage.put(((MapEntry) key).key, resume);
+    protected void updateInternal(Resume resume, MapEntry key) {
+        storage.put(key.key, resume);
     }
 
     @Override
-    protected Resume getInternal(Object key) {
-        return ((MapEntry) key).value;
+    protected Resume getInternal(MapEntry key) {
+        return key.value;
     }
 
     @Override
-    protected void deleteInternal(Object key) {
-        storage.remove(((MapEntry) key).key);
+    protected void deleteInternal(MapEntry key) {
+        storage.remove(key.key);
     }
 
 }
