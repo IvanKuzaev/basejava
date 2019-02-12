@@ -16,7 +16,7 @@ public class MapStorage extends AbstractStorage {
 
     @Override
     protected boolean isResumeExist(Object key) {
-        return storage.containsKey(key);
+        return storage.containsKey((String)key);
     }
 
     @Override
@@ -36,17 +36,17 @@ public class MapStorage extends AbstractStorage {
 
     @Override
     protected Resume getInternal(Object key) {
-        return storage.get(key);
+        return storage.get((String)key);
     }
 
     @Override
     protected void deleteInternal(Object key) {
-        storage.remove(key);
+        storage.remove((String)key);
     }
 
     @Override
     protected Resume[] getAll() {
-        return storage.values().toArray(new Resume[storage.size()]);
+        return storage.values().toArray(new Resume[0]);
     }
 
     @Override

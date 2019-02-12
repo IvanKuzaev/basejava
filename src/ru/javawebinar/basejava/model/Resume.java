@@ -1,6 +1,6 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.Comparator;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Resume implements Comparable<Resume> {
@@ -10,11 +10,10 @@ public class Resume implements Comparable<Resume> {
 
     private String fullName;
 
-    public static final Comparator<Resume> COMPARATOR = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
-
     @Override
     public int compareTo(Resume o) {
-        return COMPARATOR.compare(this, o);
+        int cName = fullName.compareTo(o.fullName);
+        return cName != 0 ? cName : uuid.compareTo(o.uuid);
 //        return uuid.compareTo(o.uuid);
     }
 
@@ -23,6 +22,8 @@ public class Resume implements Comparable<Resume> {
     }
 
     public Resume(String uuid, String fullName) {
+        Objects.requireNonNull(uuid, "uuid must not be null");
+        Objects.requireNonNull(fullName, "fullName must not be null");
         this.uuid = uuid;
         this.fullName = fullName;
     }

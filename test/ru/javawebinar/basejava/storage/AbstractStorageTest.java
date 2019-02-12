@@ -13,10 +13,10 @@ import java.util.List;
 public abstract class AbstractStorageTest {
 
     private static final Resume[] RESUMES = {
-            new Resume("uuid01", "Ivanov Sergei"),
-            new Resume("uuid02", "Petrov Vladimir"),
+            new Resume("uuid04", "Ivanov Sergei"),
             new Resume("uuid03", "Petrov Vladimir"),
-            new Resume("uuid04", "Sidorova Elena"),
+            new Resume("uuid02", "Petrov Vladimir"),
+            new Resume("uuid01", "Sidorova Elena"),
     };
     private static final int SIZE = RESUMES.length;
 
