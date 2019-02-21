@@ -1,113 +1,69 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.Objects;
 
-public class ResumeData<E> {
+public abstract class ResumeData<E> {
     protected String title;
-    protected boolean isList;
-    protected List<E> elements;
+    protected E data;
 
-    public ResumeData(String title, boolean isList) {
+    public ResumeData(String title, E data) {
         this.title = title;
-        this.isList = isList;
-        this.elements = new ArrayList<E>();
-    }
-
-    public ResumeData(String title, boolean isList, E ... elements) {
-        this.title = title;
-        this.isList = isList;
-        this.elements = new ArrayList<E>();
-        if (!isList && elements.length > 1) {
-            throw new Error("Inproper use of ResumeData constructor");
-        }
-        for (E e : elements) {
-            if (e != null) {
-                setElement(e);
-            }
-        }
+        this.data = data;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public boolean isList() {
-        return isList;
-    }
-    public void clearElements() {
-        elements.clear();
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public int size() {
-        return elements.size();
+    public E getData() {
+        return data;
     }
 
-    public ListIterator<E> iterator() {
-        return elements.listIterator();
+    public void setData(E data) {
+        this.data = data;
     }
 
-    public E getElement() {
-        return elements.get(0);
-    }
+    abstract public void clearData();
 
-    public E getElement(int i) {
-        if (isList) {
-            return elements.get(i);
-        } else {
-            return elements.get(0);
-        }
-    }
-
-    public void setElement(E e) {
-//        if (isList) {
-            elements.add(e);
-//        } else {
-//            elements.set(0, e);
-//        }
-    }
-
-    public void setElement(int i, E e) {
-        if (isList) {
-            elements.set(i, e);
-        } else {
-            elements.set(0, e);
-        }
-    }
+    abstract public int size();
 
     @Override
-    public boolean equals(Object object) {
-        ResumeData resumeData = (ResumeData)object;
-        boolean a = true;
-        a &= title.equals(resumeData.title);
-        a &= isList == resumeData.isList;
-        a &= elements.equals(resumeData.elements);
-        return a;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResumeData<?> that = (ResumeData<?>) o;
+        return Objects.equals(title, that.title) &&
+                Objects.equals(data, that.data);
     }
 
     @Override
     public int hashCode() {
-        int a;
-        a = title.hashCode();
-        a = 31 * a + (isList? 17 : 37);
-        a = 31 * a + elements.hashCode();
-        return a;
+        int hashTitle = 0;
+        if (title != null) {
+            hashTitle = title.hashCode();
+        }
+        int hashData = 0;
+        if (data != null) {
+            hashData =  data.hashCode();
+        }
+        return hashTitle ^ hashData;
     }
 
     @Override
     public String toString() {
-        String a = getTitle() + "\n";
-        int size = elements.size();
-        for (int i = 0; i < size; i++) {
-            E e = elements.get(i);
-            if (e != null) {
-                a += "\t" + e.toString();
-                if (i < size - 1) {//no "\n" after the last element
-                    a += "\n";
-                }
-            }
+        String titleString = "";
+        if (title != null) {
+            titleString = title + "\n";
         }
-        return a;
+        String dataString = "";
+        if (data != null) {
+            dataString = "\t" + data + "\n";
+        }
+        return titleString + dataString;
     }
+
 }
