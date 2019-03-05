@@ -8,21 +8,21 @@ import java.util.List;
 public class ResumeTestData {
 
     private static Resume getFilledResume() {
-        Resume resume = null;
+        Resume resume;
 
         resume = new Resume("uuid01", "Григорий Кислин");
 
-        resume.setContact(Contacts.PHONE1, new DataString("Моб.тел:", "+7(921) 855-0482"));
-        resume.setContact(Contacts.SKYPE, new DataString("Skype:", "grigory.kislin"));
-        resume.setContact(Contacts.EMAIL, new DataString("Эл.почта:", "gkislin@yandex.ru"));
-        resume.setContact(Contacts.HOMEPAGE, new DataString("Сайт:", "http://gkislin.ru/"));
-        resume.setContact(Contacts.PROFILE1, new DataString("Профиль LinkedIn:", "https://www.linkedin.com/in/gkislin"));
-        resume.setContact(Contacts.PROFILE2, new DataString("Профиль GitHub:", "https://github.com/gkislin"));
-        resume.setContact(Contacts.PROFILE3, new DataString("Профиль Stackoverflow:", "https://stackoverflow.com/users/548473"));
+        resume.setContact(Contacts.MOBILE_PHONE, "+7(921) 855-0482");
+        resume.setContact(Contacts.SKYPE, "grigory.kislin");
+        resume.setContact(Contacts.EMAIL, "gkislin@yandex.ru");
+        resume.setContact(Contacts.HOMEPAGE, "http://gkislin.ru/");
+        resume.setContact(Contacts.LINKEDIN, "https://www.linkedin.com/in/gkislin");
+        resume.setContact(Contacts.GITHUB, "https://github.com/gkislin");
+        resume.setContact(Contacts.STACKOVERFLOW, "https://stackoverflow.com/users/548473");
 
-        resume.setSection(Sections.OBJECTIVE, new DataString(null, "Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"));
-        resume.setSection(Sections.PERSONAL, new DataString(null, "Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры."));
-        resume.setSection(Sections.ACHIEVEMENT, new DataStrings(null,
+        resume.setSection(Sections.OBJECTIVE, new StringSection("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"));
+        resume.setSection(Sections.PERSONAL, new StringSection("Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры."));
+        resume.setSection(Sections.ACHIEVEMENT, new StringsSection(
                 "С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие (JMS/AKKA)\". Организация онлайн стажировок и ведение проектов. Более 1000 выпускников.",
                 "Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike. Интеграция с Twilio, DuoSecurity, Google Authenticator, Jira, Zendesk.",
                 "Налаживание процесса разработки и непрерывной интеграции ERP системы River BPM. Интеграция с 1С, Bonita BPM, CMIS, LDAP. Разработка приложения управления окружением на стеке: Scala/Play/Anorm/JQuery. Разработка SSO аутентификации и авторизации различных ERP модулей, интеграция CIFS/SMB java сервера.",
@@ -30,7 +30,7 @@ public class ResumeTestData {
                 "Создание JavaEE фреймворка для отказоустойчивого взаимодействия слабо-связанных сервисов (SOA-base архитектура, JAX-WS, JMS, AS Glassfish). Сбор статистики сервисов и информации о состоянии через систему мониторинга Nagios. Реализация онлайн клиента для администрирования и мониторинга системы по JMX (Jython/ Django).",
                 "Реализация протоколов по приему платежей всех основных платежных системы России (Cyberplat, Eport, Chronopay, Сбербанк), Белоруcсии(Erip, Osmp) и Никарагуа."
         ));
-        resume.setSection(Sections.QUALIFICATIONS, new DataStrings(null,
+        resume.setSection(Sections.QUALIFICATIONS, new StringsSection(
                 "JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2",
                 "Version control: Subversion, Git, Mercury, ClearCase, Perforce",
                 "DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle,",
@@ -47,7 +47,7 @@ public class ResumeTestData {
                 "Отличное знание и опыт применения концепций ООП, SOA, шаблонов проектрирования, архитектурных шаблонов, UML, функционального программирования",
                 "Родной русский, английский \"upper intermediate\""
         ));
-        resume.setSection(Sections.EXPERIENCE, new LifeStages("Опыт работы",
+        resume.setSection(Sections.EXPERIENCE, new BioSection(
                 new LifeStage(new Organization("Java Online Projects", "http://javaops.ru/"),
                         new LifePeriod(LocalDate.of(2013, 10, 1), LocalDate.of(9999, 1, 1),"Автор проекта.", "Создание, организация и проведение Java онлайн проектов и стажировок.")),
                 new LifeStage(new Organization("Wrike", "https://www.wrike.com/"),
@@ -65,7 +65,7 @@ public class ResumeTestData {
                 new LifeStage(new Organization("Alcatel", "http://www.alcatel.ru/"),
                         new LifePeriod(LocalDate.of(1997, 9, 1), LocalDate.of(2005, 1, 1),"Инженер по аппаратному и программному тестированию", "Тестирование, отладка, внедрение ПО цифровой телефонной станции Alcatel 1000 S12 (CHILL, ASM)."))
         ));
-        resume.setSection(Sections.EDUCATION, new LifeStages("Образование",
+        resume.setSection(Sections.EDUCATION, new BioSection(
                 new LifeStage(new Organization("Coursera", "https://www.coursera.org/course/progfun"),
                         new LifePeriod(LocalDate.of(2013, 3, 1), LocalDate.of(2013, 5, 1),"\"Functional Programming Principles in Scala\" by Martin Odersky", null)),
                 new LifeStage(new Organization("Luxoft", "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366"),

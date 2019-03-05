@@ -7,8 +7,8 @@ public class Resume implements Comparable<Resume> {
     private final String uuid;
     private String fullName;
 
-    private HashMap<Contacts, DataString> contacts = new HashMap<>();
-    private HashMap<Sections, ResumeData<?>> sections = new HashMap<>();
+    private EnumMap<Contacts, String> contacts = new EnumMap<>(Contacts.class);
+    private EnumMap<Sections, ResumeSection> sections = new EnumMap<>(Sections.class);
 
     public Resume(String uuid, String fullName) {
         Objects.requireNonNull(uuid, "uuid must not be null");
@@ -33,19 +33,19 @@ public class Resume implements Comparable<Resume> {
         this.fullName = fullName;
     }
 
-    public DataString getContact(Contacts contact) {
+    public String getContact(Contacts contact) {
         return contacts.get(contact);
     }
 
-    public void setContact(Contacts contact, DataString data) {
+    public void setContact(Contacts contact, String data) {
         contacts.put(contact, data);
     }
 
-    public ResumeData<?> getSection(Sections section) {
+    public ResumeSection getSection(Sections section) {
         return sections.get(section);
     }
 
-    public void setSection(Sections section, ResumeData<?> data) {
+    public void setSection(Sections section, ResumeSection data) {
         sections.put(section, data);
     }
 
@@ -76,18 +76,12 @@ public class Resume implements Comparable<Resume> {
         String string = "";
         string += getFullName() + "\n\n";
         for (Contacts c : Contacts.values()) {
-            DataString contact = getContact(c);
-            if (contact != null) {
-                string += contact + "\n";
-            }
+            string += c.getTitle() + ": " + getContact(c) + "\n";
         }
         string += "\n\n";
         for (Sections s : Sections.values()) {
-            ResumeData<?> section = getSection(s);
-            string += s.getTitle() + "\n";
-            if (section != null) {
-                string += section + "\n\n";
-            }
+            string += s.getTitle() + "\n\n";
+            string += getSection(s) + "\n\n";
         }
         return string;
     }
