@@ -1,24 +1,25 @@
 package ru.javawebinar.basejava.model;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Resume implements Comparable<Resume> {
+public class Resume implements Comparable<Resume>, Serializable {
 
     private final String uuid;
     private String fullName;
 
     private EnumMap<Contacts, String> contacts = new EnumMap<>(Contacts.class);
-    private EnumMap<Sections, ResumeSection> sections = new EnumMap<>(Sections.class);
+    private EnumMap<Sections, AbstractResumeSection> sections = new EnumMap<>(Sections.class);
+
+    public Resume(String fullName) {
+        this(UUID.randomUUID().toString(), fullName);
+    }
 
     public Resume(String uuid, String fullName) {
         Objects.requireNonNull(uuid, "uuid must not be null");
         Objects.requireNonNull(fullName, "fullName must not be null");
         this.uuid = uuid;
         this.fullName = fullName;
-    }
-
-    public Resume(String fullName) {
-        this(UUID.randomUUID().toString(), fullName);
     }
 
     public String getUuid() {
@@ -41,11 +42,11 @@ public class Resume implements Comparable<Resume> {
         contacts.put(contact, data);
     }
 
-    public ResumeSection getSection(Sections section) {
+    public AbstractResumeSection getSection(Sections section) {
         return sections.get(section);
     }
 
-    public void setSection(Sections section, ResumeSection data) {
+    public void setSection(Sections section, AbstractResumeSection data) {
         sections.put(section, data);
     }
 

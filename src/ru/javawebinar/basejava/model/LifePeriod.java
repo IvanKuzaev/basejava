@@ -1,11 +1,12 @@
 package ru.javawebinar.basejava.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class LifePeriod {
-    protected LocalDate startDate;
-    protected LocalDate endDate;
+public class LifePeriod  implements Serializable {
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     private String string1;
     private String string2;

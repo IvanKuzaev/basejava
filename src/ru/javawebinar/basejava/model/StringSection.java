@@ -2,7 +2,7 @@ package ru.javawebinar.basejava.model;
 
 import java.util.Objects;
 
-public class StringSection extends ResumeSection{
+public class StringSection extends AbstractResumeSection {
     private String string;
 
     public StringSection(String string) {

@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class StringsSection extends ResumeSection{
+public class StringListSection extends AbstractResumeSection {
     private List<String> strings;
 
-    public StringsSection(String ... strings) {
+    public StringListSection(String ... strings) {
         this.strings = Arrays.asList(strings);
     }
 
@@ -29,7 +29,7 @@ public class StringsSection extends ResumeSection{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StringsSection that = (StringsSection) o;
+        StringListSection that = (StringListSection) o;
         return Objects.equals(strings, that.strings);
     }
 

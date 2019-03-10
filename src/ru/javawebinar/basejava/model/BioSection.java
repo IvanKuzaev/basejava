@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class BioSection extends ResumeSection {
+public class BioSection extends AbstractResumeSection {
     private List<LifeStage> stages;
 
     public BioSection(LifeStage ... stages) {

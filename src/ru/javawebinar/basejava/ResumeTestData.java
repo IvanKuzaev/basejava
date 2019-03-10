@@ -1,13 +1,16 @@
 package ru.javawebinar.basejava;
 
 import ru.javawebinar.basejava.model.*;
+import ru.javawebinar.basejava.storage.SerializableFileStorage;
+import ru.javawebinar.basejava.storage.Storage;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
 
 public class ResumeTestData {
 
-    private static Resume getFilledResume() {
+    public static Resume getFilledResume() {
         Resume resume;
 
         resume = new Resume("uuid01", "Григорий Кислин");
@@ -22,7 +25,7 @@ public class ResumeTestData {
 
         resume.setSection(Sections.OBJECTIVE, new StringSection("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"));
         resume.setSection(Sections.PERSONAL, new StringSection("Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры."));
-        resume.setSection(Sections.ACHIEVEMENT, new StringsSection(
+        resume.setSection(Sections.ACHIEVEMENT, new StringListSection(
                 "С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие (JMS/AKKA)\". Организация онлайн стажировок и ведение проектов. Более 1000 выпускников.",
                 "Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike. Интеграция с Twilio, DuoSecurity, Google Authenticator, Jira, Zendesk.",
                 "Налаживание процесса разработки и непрерывной интеграции ERP системы River BPM. Интеграция с 1С, Bonita BPM, CMIS, LDAP. Разработка приложения управления окружением на стеке: Scala/Play/Anorm/JQuery. Разработка SSO аутентификации и авторизации различных ERP модулей, интеграция CIFS/SMB java сервера.",
@@ -30,7 +33,7 @@ public class ResumeTestData {
                 "Создание JavaEE фреймворка для отказоустойчивого взаимодействия слабо-связанных сервисов (SOA-base архитектура, JAX-WS, JMS, AS Glassfish). Сбор статистики сервисов и информации о состоянии через систему мониторинга Nagios. Реализация онлайн клиента для администрирования и мониторинга системы по JMX (Jython/ Django).",
                 "Реализация протоколов по приему платежей всех основных платежных системы России (Cyberplat, Eport, Chronopay, Сбербанк), Белоруcсии(Erip, Osmp) и Никарагуа."
         ));
-        resume.setSection(Sections.QUALIFICATIONS, new StringsSection(
+        resume.setSection(Sections.QUALIFICATIONS, new StringListSection(
                 "JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2",
                 "Version control: Subversion, Git, Mercury, ClearCase, Perforce",
                 "DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle,",
@@ -89,8 +92,12 @@ public class ResumeTestData {
         //make initial resume
         Resume resumeInitial = getFilledResume();
 
+        //testing SerializableFileStorage class
+        Storage storage = new SerializableFileStorage(new File("C:\\Users\\Ivan\\IntelliJ Projects\\basejava\\data"));
+        storage.save(resumeInitial);
+
         //make a copy of initial resume
-        Resume resumeCopy = getFilledResume();
+        Resume resumeCopy = storage.get("uuid01");
 
         //make a slightly different copy of initial resume
         Resume resumeDifference = getFilledResume();
@@ -109,5 +116,8 @@ public class ResumeTestData {
         System.out.println("resumeInitial.hashCode() = " + resumeInitial.hashCode());
         System.out.println("resumeCopy.hashCode() = " + resumeCopy.hashCode());
         System.out.println("resumeDifference.hashCode() = " + resumeDifference.hashCode());
+
+        storage.clear();
+
     }
 }
