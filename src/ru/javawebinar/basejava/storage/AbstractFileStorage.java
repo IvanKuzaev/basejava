@@ -86,8 +86,6 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     public void clear() {
         for (File f : directory.listFiles()) {
             boolean result = f.delete();
-            System.out.println("Clearing " + f + " : " + result);
-
         }
     }
 

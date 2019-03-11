@@ -10,10 +10,7 @@ import java.util.List;
 
 public class ResumeTestData {
 
-    public static Resume getFilledResume() {
-        Resume resume;
-
-        resume = new Resume("uuid01", "Григорий Кислин");
+    public static Resume fillResume(Resume resume) {
 
         resume.setContact(Contacts.MOBILE_PHONE, "+7(921) 855-0482");
         resume.setContact(Contacts.SKYPE, "grigory.kislin");
@@ -90,7 +87,8 @@ public class ResumeTestData {
     public static void main(String[] args) throws Throwable {
 
         //make initial resume
-        Resume resumeInitial = getFilledResume();
+        Resume resumeInitial = new Resume("uuid01", "Григорий Кислин");
+        fillResume(resumeInitial);
 
         //testing SerializableFileStorage class
         Storage storage = new SerializableFileStorage(new File("C:\\Users\\Ivan\\IntelliJ Projects\\basejava\\data"));
@@ -100,7 +98,8 @@ public class ResumeTestData {
         Resume resumeCopy = storage.get("uuid01");
 
         //make a slightly different copy of initial resume
-        Resume resumeDifference = getFilledResume();
+        Resume resumeDifference = new Resume("uuid01", "Григорий Кислин");
+        fillResume(resumeDifference);
         List<LifeStage> lifeStages = (List<LifeStage>)resumeDifference.getSection(Sections.EXPERIENCE).getData();
         List<LifePeriod> lifePeriods = lifeStages.get(7).getData();
         lifePeriods.get(0).setStartDate(LocalDate.of(1983, 9, 1));

@@ -17,6 +17,7 @@ public class SerializableFileStorage extends AbstractFileStorage {
         oos.writeObject(resume);
         oos.flush();
         oos.close();
+        fos.close();
     }
 
     @Override
@@ -29,6 +30,8 @@ public class SerializableFileStorage extends AbstractFileStorage {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        ois.close();
+        fis.close();
         return resume;
     }
 

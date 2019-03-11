@@ -1,14 +1,17 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.*;
-import ru.javawebinar.basejava.model.Resume;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import ru.javawebinar.basejava.exception.ExistStorageException;
+import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static ru.javawebinar.basejava.ResumeTestData.fillResume;
+
 
 public abstract class AbstractStorageTest {
 
@@ -31,6 +34,10 @@ public abstract class AbstractStorageTest {
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
+        for (Resume resume : RESUMES) {
+            fillResume(resume);
+        }
+        fillResume(RESUME_NEW);
     }
 
     @Before
@@ -52,7 +59,7 @@ public abstract class AbstractStorageTest {
         int sizeBefore = storage.size();
         storage.save(RESUME_NEW);
         Assert.assertEquals("Testing method save(): size didn't increment.", sizeBefore + 1, storage.size());
-        Assert.assertSame("Testing method save(): invalid Resume reference.", RESUME_NEW, storage.get(UUID_NEW));
+        Assert.assertEquals("Testing method save(): invalid Resume reference.", RESUME_NEW, storage.get(UUID_NEW));
     }
 
     @Test(expected = ExistStorageException.class)
@@ -65,7 +72,7 @@ public abstract class AbstractStorageTest {
         Resume resumeUpdated = storage.get(UUID_EXIST);
         resumeUpdated.setFullName("Ivanova Elena");
         storage.update(resumeUpdated);
-        Assert.assertSame("Testing method update(): invalid Resume reference.", resumeUpdated, storage.get(UUID_EXIST));
+        Assert.assertEquals("Testing method update(): invalid Resume reference.", resumeUpdated, storage.get(UUID_EXIST));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -75,7 +82,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void get() throws Exception {
-        Assert.assertSame("Testing method get(): invalid Resume reference.", RESUME_EXIST, storage.get(UUID_EXIST));
+        Assert.assertEquals("Testing method get(): invalid Resume reference.", RESUME_EXIST, storage.get(UUID_EXIST));
     }
 
     @Test(expected = NotExistStorageException.class)
