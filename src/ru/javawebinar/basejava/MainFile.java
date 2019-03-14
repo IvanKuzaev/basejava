@@ -1,27 +1,29 @@
 package ru.javawebinar.basejava;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class MainFile {
 
-    public static void recursivePrintDirectoryStructure(int deep, File directory) {
+    public static void recursivePrintDirectoryStructure(String tabs, File directory) {
         if (directory.isDirectory()) {
-            String tabs = "";
-            for (int i = 0; i < deep; i++) {
-                tabs += "\t";
-            }
             System.out.println(tabs + "[" + directory.getName() + "]");
             File[] entries = directory.listFiles();
             if (entries != null) {
+                ArrayList<File> dirs = new ArrayList<>();
+                ArrayList<File> files = new ArrayList<>();
                 for (File e : entries) {
                     if (e.isDirectory()) {
-                        recursivePrintDirectoryStructure(deep + 1, e);
+                        dirs.add(e);
+                    } else {
+                        files.add(e);
                     }
                 }
-                for (File e : entries) {
-                    if (!e.isDirectory()) {
-                        System.out.println(tabs + "\t" + e.getName());
-                    }
+                for (int i = 0; i < dirs.size(); i++) {
+                    recursivePrintDirectoryStructure(tabs + "\t", dirs.get(i));
+                }
+                for (int i = 0; i < files.size(); i++) {
+                    System.out.println(tabs + "\t" + files.get(i).getName());
                 }
             }
         }
@@ -30,7 +32,7 @@ public class MainFile {
     public static void main(String[] args) {
         File directory = new File(".");
         System.out.println(directory.getAbsolutePath());
-        recursivePrintDirectoryStructure(0, directory);
+        recursivePrintDirectoryStructure("", directory);
     }
 
 }
