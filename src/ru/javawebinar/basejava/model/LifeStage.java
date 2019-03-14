@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class LifeStage  implements Serializable {
+    static final long serialVersionUID = 126L;
     private Organization organization;
     private List<LifePeriod> periods;
 

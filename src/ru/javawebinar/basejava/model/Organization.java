@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Organization implements Serializable {
+    static final long serialVersionUID = 127L;
     private String title;
     private String description;
     private String webLink;

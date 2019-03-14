@@ -65,32 +65,48 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected void deleteInternal(File file) {
-        file.delete();
+        if (!file.delete()) {
+            throw new RuntimeException("File system error");
+        }
     }
 
     @Override
     protected Resume[] getAll() {
         File[] files = directory.listFiles();
-        Resume[] resumes = new Resume[files.length];
-        for (int i = 0; i < files.length; i++) {
-            try {
-                resumes[i] = doRead(files[i]);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (files != null) {
+            Resume[] resumes = new Resume[files.length];
+            for (int i = 0; i < files.length; i++) {
+                try {
+                    resumes[i] = doRead(files[i]);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+            return resumes;
+        } else {
+            throw new RuntimeException("File system error");
         }
-        return resumes;
     }
 
     @Override
     public void clear() {
-        for (File f : directory.listFiles()) {
-            boolean result = f.delete();
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                boolean result = f.delete();
+            }
+        } else {
+            throw new RuntimeException("File system error");
         }
     }
 
     @Override
     public int size() {
-        return directory.listFiles().length;
+        File[] files = directory.listFiles();
+        if (files != null) {
+            return files.length;
+        } else {
+            throw new RuntimeException("File system error");
+        }
     }
 }

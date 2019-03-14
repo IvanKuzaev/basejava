@@ -5,17 +5,18 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class LifePeriod  implements Serializable {
+    static final long serialVersionUID = 125L;
     private LocalDate startDate;
     private LocalDate endDate;
 
-    private String string1;
-    private String string2;
+    private String title;
+    private String description;
 
     public LifePeriod(LocalDate startDate, LocalDate endDate, String title, String description) {
         this.startDate = startDate;
         this.endDate = endDate;
-        this.string1 = title;
-        this.string2 = description;
+        this.title = title;
+        this.description = description;
     }
 
     public LocalDate getStartDate() {
@@ -36,7 +37,7 @@ public class LifePeriod  implements Serializable {
 
     @Override
     public String toString() {
-        return dateCompact(startDate) + " - " + dateCompact(endDate) + " " + string1 + (string2 != null ? "\n" + string2: "");
+        return dateCompact(startDate) + " - " + dateCompact(endDate) + " " + title + (description != null ? "\n" + description : "");
     }
 
     @Override
@@ -46,13 +47,13 @@ public class LifePeriod  implements Serializable {
         LifePeriod that = (LifePeriod) o;
         return Objects.equals(startDate, that.startDate) &&
                 Objects.equals(endDate, that.endDate) &&
-                Objects.equals(string1, that.string1) &&
-                Objects.equals(string2, that.string2);
+                Objects.equals(title, that.title) &&
+                Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startDate, endDate, string1, string2);
+        return Objects.hash(startDate, endDate, title, description);
     }
 
     private String dateCompact(LocalDate date) {

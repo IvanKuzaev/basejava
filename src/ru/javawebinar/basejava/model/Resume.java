@@ -5,6 +5,7 @@ import java.util.*;
 
 public class Resume implements Comparable<Resume>, Serializable {
 
+    static final long serialVersionUID = 123L;
     private final String uuid;
     private String fullName;
 
