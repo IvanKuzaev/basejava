@@ -1,12 +1,13 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.StorageException;
+import ru.javawebinar.basejava.exception.*;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+//TODO: delete later if AbstractDiskStorage and its descendants work well
 public abstract class AbstractFileStorage extends AbstractStorage<File> {
     private File directory;
 
@@ -40,7 +41,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         try {
             doWrite(resume, file);
         } catch (IOException e) {
-            throw new StorageException("IO error", file.getName(), e);
+            throw new StorageException("File error", file.getName(), e);
         }
     }
 
@@ -48,10 +49,10 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected void saveInternal(Resume resume, File file) {
         try {
             file.createNewFile();
-            doWrite(resume, file);
         } catch (IOException e) {
-            throw new StorageException("IO error", file.getName(), e);
+            throw new StorageException("Couldn't create file", file.getName(), e);
         }
+        updateInternal(resume, file);
     }
 
     @Override
@@ -59,14 +60,14 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         try {
             return doRead(file);
         } catch (IOException e) {
-            throw new StorageException("IO error", file.getName(), e);
+            throw new StorageException("File error", file.getName(), e);
         }
     }
 
     @Override
     protected void deleteInternal(File file) {
         if (!file.delete()) {
-            throw new RuntimeException("File system error");
+            throw new StorageException("File delete error", file.getName());
         }
     }
 
@@ -93,7 +94,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         File[] files = directory.listFiles();
         if (files != null) {
             for (File f : files) {
-                boolean result = f.delete();
+                deleteInternal(f);
             }
         } else {
             throw new RuntimeException("File system error");

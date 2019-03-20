@@ -7,8 +7,13 @@ import java.util.Objects;
 public class StringListSection extends AbstractResumeSection {
     private List<String> strings;
 
+    public StringListSection(List<String> strings) {
+        Objects.requireNonNull(strings, "String list must not be null");
+        this.strings = strings;
+    }
+
     public StringListSection(String ... strings) {
-        this.strings = Arrays.asList(strings);
+        this(Arrays.asList(strings));
     }
 
     @Override

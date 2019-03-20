@@ -10,7 +10,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.javawebinar.basejava.ResumeTestData.fillResume;
+import static ru.javawebinar.basejava.ResumeTestData.fillDummyResume;
 
 
 public abstract class AbstractStorageTest {
@@ -34,10 +34,10 @@ public abstract class AbstractStorageTest {
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
-        for (Resume resume : RESUMES) {
-            fillResume(resume);
+        for (int i = 0; i < SIZE; i++) {
+            fillDummyResume(RESUMES[i], i);
         }
-        fillResume(RESUME_NEW);
+        fillDummyResume(RESUME_NEW, 99999);
     }
 
     @Before

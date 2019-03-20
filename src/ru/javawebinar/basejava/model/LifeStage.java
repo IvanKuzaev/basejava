@@ -16,8 +16,7 @@ public class LifeStage  implements Serializable {
     }
 
     public LifeStage(Organization organization, LifePeriod... periods) {
-        this.organization = organization;
-        this.periods = Arrays.asList(periods);
+        this(organization, Arrays.asList(periods));
     }
 
     public List<LifePeriod> getData() {

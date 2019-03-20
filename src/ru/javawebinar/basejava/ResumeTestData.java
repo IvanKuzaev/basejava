@@ -1,14 +1,41 @@
 package ru.javawebinar.basejava;
 
 import ru.javawebinar.basejava.model.*;
-import ru.javawebinar.basejava.storage.SerializableFileStorage;
-import ru.javawebinar.basejava.storage.Storage;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
 
 public class ResumeTestData {
+
+    public static Resume fillDummyResume(Resume resume, int dummy) {
+
+        resume.setContact(Contacts.MOBILE_PHONE, "+7(123) 456-78" + dummy);
+        resume.setContact(Contacts.SKYPE, "dummy.dummy" + dummy);
+        resume.setContact(Contacts.EMAIL, "dummy" + dummy + "@dummy.ru");
+        resume.setContact(Contacts.HOMEPAGE, "http://dummy" + dummy + ".ru");
+        resume.setContact(Contacts.LINKEDIN, "https://www.linkedin.com/in/dummy" + dummy);
+        resume.setContact(Contacts.GITHUB, "https://github.com/dummy" + dummy);
+        resume.setContact(Contacts.STACKOVERFLOW, "https://stackoverflow.com/users/dummy" + dummy);
+
+        resume.setSection(Sections.OBJECTIVE, new StringSection("Objective" + dummy));
+        resume.setSection(Sections.PERSONAL, new StringSection("Personal data " + dummy));
+        resume.setSection(Sections.ACHIEVEMENT, new StringListSection("Achievement1" + dummy, "Achievement2" + dummy, "Achievement3" + dummy));
+        resume.setSection(Sections.QUALIFICATIONS, new StringListSection("Qualification1" + dummy, "Qualification2" + dummy, "Qualification3" + dummy));
+        resume.setSection(Sections.EXPERIENCE, new BioSection(
+                new LifeStage(new Organization("Organization1_" + dummy, "http://organization1_" + dummy + ".com"),
+                        new LifePeriod(LocalDate.of(2013, 10, 1), LocalDate.of(9999, 1, 1),"Position1_" + dummy, "content1_" + dummy)),
+                new LifeStage(new Organization("Organization2_" + dummy, "http://organization2_" + dummy + ".com"),
+                        new LifePeriod(LocalDate.of(2012, 10, 1), LocalDate.of(2009, 1, 1),"Position2_" + dummy, "content2_" + dummy))
+        ));
+        resume.setSection(Sections.EDUCATION, new BioSection(
+                new LifeStage(new Organization("Institute1_" + dummy, "https://institute1_" + dummy + ".com"),
+                        new LifePeriod(LocalDate.of(2013, 3, 1), LocalDate.of(2011, 5, 1),"study1_" + dummy, null)),
+                new LifeStage(new Organization("Institute2_" + dummy, "https://institute2_" + dummy + ".com"),
+                        new LifePeriod(LocalDate.of(2010, 3, 1), LocalDate.of(2005, 5, 1),"study2_" + dummy, null))
+        ));
+
+        return resume;
+    }
 
     public static Resume fillResume(Resume resume) {
 
@@ -90,12 +117,9 @@ public class ResumeTestData {
         Resume resumeInitial = new Resume("uuid01", "Григорий Кислин");
         fillResume(resumeInitial);
 
-        //testing SerializableFileStorage class
-        Storage storage = new SerializableFileStorage(new File("C:\\Users\\Ivan\\IntelliJ Projects\\basejava\\data"));
-        storage.save(resumeInitial);
-
         //make a copy of initial resume
-        Resume resumeCopy = storage.get("uuid01");
+        Resume resumeCopy = new Resume("uuid01", "Григорий Кислин");
+        fillResume(resumeCopy);
 
         //make a slightly different copy of initial resume
         Resume resumeDifference = new Resume("uuid01", "Григорий Кислин");
@@ -115,8 +139,6 @@ public class ResumeTestData {
         System.out.println("resumeInitial.hashCode() = " + resumeInitial.hashCode());
         System.out.println("resumeCopy.hashCode() = " + resumeCopy.hashCode());
         System.out.println("resumeDifference.hashCode() = " + resumeDifference.hashCode());
-
-        storage.clear();
 
     }
 }

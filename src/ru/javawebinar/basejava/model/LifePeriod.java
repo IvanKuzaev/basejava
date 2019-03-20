@@ -13,6 +13,8 @@ public class LifePeriod  implements Serializable {
     private String description;
 
     public LifePeriod(LocalDate startDate, LocalDate endDate, String title, String description) {
+        Objects.requireNonNull(startDate, "startDate must not be null");
+        Objects.requireNonNull(endDate, "endDate must not be null");
         this.startDate = startDate;
         this.endDate = endDate;
         this.title = title;
