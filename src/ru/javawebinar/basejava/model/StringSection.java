@@ -3,6 +3,7 @@ package ru.javawebinar.basejava.model;
 import java.util.Objects;
 
 public class StringSection extends AbstractResumeSection {
+    static final long serialVersionUID = 129L;
     private String string;
 
     public StringSection(String string) {

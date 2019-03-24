@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class StringListSection extends AbstractResumeSection {
+    static final long serialVersionUID = 128L;
     private List<String> strings;
 
     public StringListSection(List<String> strings) {

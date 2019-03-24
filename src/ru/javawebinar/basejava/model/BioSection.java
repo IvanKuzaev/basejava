@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class BioSection extends AbstractResumeSection {
+    static final long serialVersionUID = 125L;
     private List<LifeStage> stages;
 
     public BioSection(LifeStage ... stages) {

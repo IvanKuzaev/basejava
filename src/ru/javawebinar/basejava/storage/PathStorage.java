@@ -48,9 +48,9 @@ public class PathStorage extends AbstractDiskStorage<Path> {
         try {
             return Files.newOutputStream(path);
         } catch(FileNotFoundException e) {
-            throw new StorageException("File not found", path.toFile().getName());
+            throw new StorageException("File not found", getName(path));
         } catch(IOException e) {
-            throw new StorageException("File error", path.toFile().getName());
+            throw new StorageException("File error", getName(path));
         }
     }
 
@@ -59,20 +59,20 @@ public class PathStorage extends AbstractDiskStorage<Path> {
         try {
             return Files.newInputStream(path);
         } catch(FileNotFoundException e) {
-            throw new StorageException("File not found", path.toFile().getName());
+            throw new StorageException("File not found", getName(path));
         } catch(IOException e) {
-            throw new StorageException("File error", path.toFile().getName());
+            throw new StorageException("File error", getName(path));
         }
     }
 
     @Override
     protected Path getSearchKey(String uuid) {
-        return Paths.get(directory.toString(), uuid);
+        return directory.resolve(uuid);
     }
 
     @Override
     protected boolean isResumeExist(Path path) {
-        return path.toFile().exists();
+        return Files.isRegularFile(path);
     }
 
 }

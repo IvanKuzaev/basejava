@@ -6,10 +6,8 @@ import org.junit.Test;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
-
 import java.util.Arrays;
 import java.util.List;
-
 import static ru.javawebinar.basejava.ResumeTestData.fillDummyResume;
 
 

@@ -2,6 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.storage.fileformat.FileFormatStrategy;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,10 +13,12 @@ public abstract class AbstractDiskStorage<FSE /* extends File & Path */> extends
 
     protected FileFormatStrategy fileFormatStrategy;
     protected FSE directory;
+    private int size;
 
     public AbstractDiskStorage(FSE directory) {
         Objects.requireNonNull(directory, "directory must not be null.");
         this.directory = directory;
+        size = 0;
         if (!isDirectory(this.directory)) {
             throw new IllegalArgumentException(getName(this.directory) + " is not directory.");
         }
@@ -24,7 +27,7 @@ public abstract class AbstractDiskStorage<FSE /* extends File & Path */> extends
         }
     }
 
-    public void setStrategy(FileFormatStrategy ffs) {
+    public void setFileFormatStrategy(FileFormatStrategy ffs) {
         fileFormatStrategy = ffs;
     }
 
@@ -65,6 +68,7 @@ public abstract class AbstractDiskStorage<FSE /* extends File & Path */> extends
     protected void saveInternal(Resume resume, FSE fse) {
         try {
             doCreateFile(fse);
+            size++;
         } catch (IOException e) {
             throw new StorageException("Couldn't create file", getName(fse), e);
         }
@@ -84,8 +88,9 @@ public abstract class AbstractDiskStorage<FSE /* extends File & Path */> extends
     protected void deleteInternal(FSE fse) {
         try {
             doDelete(fse);
+            size--;
         } catch (IOException e) {
-            throw new StorageException("File delete error", getName(fse));
+            throw new StorageException("File delete error", getName(fse), e);
         }
     }
 
@@ -95,11 +100,11 @@ public abstract class AbstractDiskStorage<FSE /* extends File & Path */> extends
             FSE[] fses = toArray();
             Resume[] resumes = new Resume[fses.length];
             for (int i = 0; i < resumes.length; i++) {
-                resumes[i] = doRead(fses[i]);
+                resumes[i] = getInternal(fses[i]);
             }
             return resumes;
         } catch (IOException e) {
-            throw new StorageException("File error", null);
+            throw new StorageException("File error", null, e);
         }
     }
 
@@ -107,7 +112,7 @@ public abstract class AbstractDiskStorage<FSE /* extends File & Path */> extends
     public void clear() {
         try {
             for (FSE fse : toArray()) {
-                doDelete(fse);
+                deleteInternal(fse);
             }
         } catch (IOException e) {
             throw new StorageException("File delete error", null);
@@ -116,11 +121,7 @@ public abstract class AbstractDiskStorage<FSE /* extends File & Path */> extends
 
     @Override
     public int size() {
-        try {
-            return toArray().length;
-        } catch (IOException e) {
-            throw new StorageException("File error", null);
-        }
+        return size;
     }
 
 }
