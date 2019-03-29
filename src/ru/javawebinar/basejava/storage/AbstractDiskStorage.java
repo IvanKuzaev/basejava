@@ -15,7 +15,7 @@ public abstract class AbstractDiskStorage<FSE /* extends File & Path */> extends
     protected FSE directory;
     private int size;
 
-    public AbstractDiskStorage(FSE directory) {
+    public AbstractDiskStorage(FSE directory, FileFormatStrategy fileFormatStrategy) {
         Objects.requireNonNull(directory, "directory must not be null.");
         this.directory = directory;
         size = 0;
@@ -25,6 +25,11 @@ public abstract class AbstractDiskStorage<FSE /* extends File & Path */> extends
         if (!isWritableReadable(this.directory)) {
             throw new IllegalArgumentException(getName(this.directory) + " is not readable/writable");
         }
+        this.fileFormatStrategy = fileFormatStrategy;
+    }
+
+    public AbstractDiskStorage(FSE directory) {
+        this(directory, null);
     }
 
     public void setFileFormatStrategy(FileFormatStrategy ffs) {

@@ -19,8 +19,8 @@ public class ResumeTestData {
 
         resume.setSection(Sections.OBJECTIVE, new StringSection("Objective" + dummy));
         resume.setSection(Sections.PERSONAL, new StringSection("Personal data " + dummy));
-        resume.setSection(Sections.ACHIEVEMENT, new StringListSection("Achievement1" + dummy, "Achievement2" + dummy, "Achievement3" + dummy));
-        resume.setSection(Sections.QUALIFICATIONS, new StringListSection("Qualification1" + dummy, "Qualification2" + dummy, "Qualification3" + dummy));
+        resume.setSection(Sections.ACHIEVEMENTS, new StringListSection("Achievement1_" + dummy, "Achievement2_" + dummy, "Achievement3_" + dummy));
+        resume.setSection(Sections.QUALIFICATIONS, new StringListSection("Qualification1_" + dummy, "Qualification2_" + dummy, "Qualification3_" + dummy));
         resume.setSection(Sections.EXPERIENCE, new BioSection(
                 new LifeStage(new Organization("Organization1_" + dummy, "http://organization1_" + dummy + ".com"),
                         new LifePeriod(LocalDate.of(2013, 10, 1), LocalDate.of(9999, 1, 1),"Position1_" + dummy, "content1_" + dummy)),
@@ -49,7 +49,7 @@ public class ResumeTestData {
 
         resume.setSection(Sections.OBJECTIVE, new StringSection("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"));
         resume.setSection(Sections.PERSONAL, new StringSection("Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры."));
-        resume.setSection(Sections.ACHIEVEMENT, new StringListSection(
+        resume.setSection(Sections.ACHIEVEMENTS, new StringListSection(
                 "С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие (JMS/AKKA)\". Организация онлайн стажировок и ведение проектов. Более 1000 выпускников.",
                 "Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike. Интеграция с Twilio, DuoSecurity, Google Authenticator, Jira, Zendesk.",
                 "Налаживание процесса разработки и непрерывной интеграции ERP системы River BPM. Интеграция с 1С, Bonita BPM, CMIS, LDAP. Разработка приложения управления окружением на стеке: Scala/Play/Anorm/JQuery. Разработка SSO аутентификации и авторизации различных ERP модулей, интеграция CIFS/SMB java сервера.",

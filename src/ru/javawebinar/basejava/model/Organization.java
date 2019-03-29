@@ -1,13 +1,19 @@
 package ru.javawebinar.basejava.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Organization implements Serializable {
     static final long serialVersionUID = 127L;
     private String title;
     private String description;
     private String webLink;
+
+    public Organization() {
+    }
 
     public Organization(String title, String description, String webLink) {
         this.title = title;

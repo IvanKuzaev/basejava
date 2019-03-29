@@ -3,7 +3,7 @@ package ru.javawebinar.basejava.model;
 public enum Sections {
     PERSONAL("Личные качества"),
     OBJECTIVE("Позиция"),
-    ACHIEVEMENT("Достижения"),
+    ACHIEVEMENTS("Достижения"),
     QUALIFICATIONS("Квалификация"),
     EXPERIENCE("Опыт работы"),
     EDUCATION("Образование");

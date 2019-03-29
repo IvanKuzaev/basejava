@@ -8,4 +8,6 @@ public abstract class AbstractResumeSection implements Serializable {
 
     public abstract Object getData();
 
+    public abstract int size();
+
 }

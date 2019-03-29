@@ -1,16 +1,28 @@
 package ru.javawebinar.basejava.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Resume implements Comparable<Resume>, Serializable {
 
     static final long serialVersionUID = 123L;
     private final String uuid;
     private String fullName;
 
-    private EnumMap<Contacts, String> contacts = new EnumMap<>(Contacts.class);
-    private EnumMap<Sections, AbstractResumeSection> sections = new EnumMap<>(Sections.class);
+    private Map<Contacts, String> contacts = new EnumMap<>(Contacts.class);
+    private Map<Sections, AbstractResumeSection> sections = new EnumMap<>(Sections.class);
+
+    public Resume() {
+        uuid = null;
+    }
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -35,12 +47,20 @@ public class Resume implements Comparable<Resume>, Serializable {
         this.fullName = fullName;
     }
 
+    public Map<Contacts, String> getContacts() {
+        return contacts;
+    }
+
     public String getContact(Contacts contact) {
         return contacts.get(contact);
     }
 
     public void setContact(Contacts contact, String data) {
         contacts.put(contact, data);
+    }
+
+    public Map<Sections, AbstractResumeSection> getSections() {
+        return sections;
     }
 
     public AbstractResumeSection getSection(Sections section) {

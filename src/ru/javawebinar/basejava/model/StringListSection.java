@@ -1,12 +1,18 @@
 package ru.javawebinar.basejava.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class StringListSection extends AbstractResumeSection {
     static final long serialVersionUID = 128L;
     private List<String> strings;
+
+    public StringListSection() {
+    }
 
     public StringListSection(List<String> strings) {
         Objects.requireNonNull(strings, "String list must not be null");
@@ -20,6 +26,11 @@ public class StringListSection extends AbstractResumeSection {
     @Override
     public List<String> getData() {
         return strings;
+    }
+
+    @Override
+    public int size() {
+        return strings.size();
     }
 
     @Override

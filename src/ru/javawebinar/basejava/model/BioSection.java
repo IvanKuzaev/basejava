@@ -1,12 +1,18 @@
 package ru.javawebinar.basejava.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class BioSection extends AbstractResumeSection {
     static final long serialVersionUID = 125L;
     private List<LifeStage> stages;
+
+    public BioSection() {
+    }
 
     public BioSection(LifeStage ... stages) {
         this.stages = Arrays.asList(stages);
@@ -19,6 +25,11 @@ public class BioSection extends AbstractResumeSection {
     @Override
     public List<LifeStage> getData() {
         return stages;
+    }
+
+    @Override
+    public int size() {
+        return stages.size();
     }
 
     @Override

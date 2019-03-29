@@ -1,14 +1,20 @@
 package ru.javawebinar.basejava.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class LifeStage  implements Serializable {
     static final long serialVersionUID = 126L;
     private Organization organization;
     private List<LifePeriod> periods;
+
+    public LifeStage() {
+    }
 
     public LifeStage(Organization organization, List<LifePeriod> periods) {
         this.organization = organization;
@@ -21,6 +27,14 @@ public class LifeStage  implements Serializable {
 
     public List<LifePeriod> getData() {
         return periods;
+    }
+
+    public int size() {
+        return periods.size();
+    }
+
+    public Organization getOrganization() {
+        return organization;
     }
 
     @Override

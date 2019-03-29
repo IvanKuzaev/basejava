@@ -1,6 +1,7 @@
 package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
+import ru.javawebinar.basejava.storage.fileformat.FileFormatStrategy;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -9,8 +10,12 @@ import java.nio.file.Paths;
 
 public class PathStorage extends AbstractDiskStorage<Path> {
 
+    public PathStorage(String directory, FileFormatStrategy fileFormatStrategy) {
+        super(Paths.get(directory), fileFormatStrategy);
+    }
+
     public PathStorage(String directory) {
-        super(Paths.get(directory));
+        this(directory, null);
     }
 
     @Override
@@ -67,7 +72,7 @@ public class PathStorage extends AbstractDiskStorage<Path> {
 
     @Override
     protected Path getSearchKey(String uuid) {
-        return directory.resolve(uuid);
+        return Paths.get(directory.toString(), uuid);
     }
 
     @Override

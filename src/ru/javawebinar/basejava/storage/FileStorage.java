@@ -1,13 +1,18 @@
 package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
+import ru.javawebinar.basejava.storage.fileformat.FileFormatStrategy;
 
 import java.io.*;
 
 public class FileStorage extends AbstractDiskStorage<File> {
 
     public FileStorage(String directory) {
-        super(new File(directory));
+        this(directory, null);
+    }
+
+    public FileStorage(String directory, FileFormatStrategy fileFormatStrategy) {
+        super(new File(directory), fileFormatStrategy);
     }
 
     @Override

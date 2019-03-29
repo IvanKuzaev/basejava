@@ -1,10 +1,16 @@
 package ru.javawebinar.basejava.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class StringSection extends AbstractResumeSection {
     static final long serialVersionUID = 129L;
     private String string;
+
+    public StringSection() {
+    }
 
     public StringSection(String string) {
         this.string = string;
@@ -13,6 +19,11 @@ public class StringSection extends AbstractResumeSection {
     @Override
     public String getData() {
         return string;
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 
     @Override
