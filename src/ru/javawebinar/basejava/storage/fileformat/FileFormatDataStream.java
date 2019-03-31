@@ -35,22 +35,6 @@ public class FileFormatDataStream implements FileFormatStrategy {
         return collection;
     }
 
-    private void writeStringSection(DataOutputStream dos, StringSection stringSection) throws IOException {
-        dos.writeUTF(stringSection.getData());
-    }
-
-    private StringSection readStringSection(DataInputStream dis) throws IOException {
-        return new StringSection(dis.readUTF());
-    }
-
-    private void writeStringListSection(DataOutputStream dos, StringListSection stringListSection) throws IOException {
-        writeCollection(dos, stringListSection.getData(), dos::writeUTF);
-    }
-
-    private StringListSection readStringListSection(DataInputStream dis) throws IOException {
-        return new StringListSection((List<String>)readCollection(dis, dis::readUTF));
-    }
-
     private void writeLocalDate(DataOutputStream dos, LocalDate localDate) throws IOException {
         dos.writeInt(localDate.getYear());
         dos.writeInt(localDate.getMonthValue());
@@ -101,30 +85,40 @@ public class FileFormatDataStream implements FileFormatStrategy {
         return new LifeStage(organization, listLifePeriod);
     }
 
-    private void writeBioSection(DataOutputStream dos, BioSection bioSection) throws IOException {
-        writeCollection(dos, bioSection.getData(), ls -> writeLifeStage(dos, ls));
-    }
-
-    private BioSection readBioSection(DataInputStream dis) throws IOException {
-        List<LifeStage> listLifeStage = (List<LifeStage>)readCollection(dis, () -> readLifeStage(dis));
-        return new BioSection(listLifeStage);
-    }
-
-    void writeSection(DataOutputStream dos, Resume resume, Sections section) throws IOException {
+    private void writeSection(DataOutputStream dos, Resume resume, Sections section) throws IOException {
         switch (section) {
             case OBJECTIVE:
             case PERSONAL:
-                writeStringSection(dos, (StringSection)resume.getSection(section));
+                dos.writeUTF((String)resume.getSection(section).getData());
                 break;
             case ACHIEVEMENTS:
             case QUALIFICATIONS:
-                writeStringListSection(dos, (StringListSection)resume.getSection(section));
+                writeCollection(dos, (List<String>)resume.getSection(section).getData(), dos::writeUTF);
                 break;
             case EXPERIENCE:
             case EDUCATION:
-                writeBioSection(dos, (BioSection)resume.getSection(section));
+                writeCollection(dos, (List<LifeStage>)resume.getSection(section).getData(), ls -> writeLifeStage(dos, ls));
                 break;
         }
+    }
+
+    private AbstractResumeSection readSection(DataInputStream dis, Sections section) throws IOException {
+        AbstractResumeSection resumeSection = null;
+        switch (section) {
+            case OBJECTIVE:
+            case PERSONAL:
+                resumeSection = new StringSection(dis.readUTF());
+                break;
+            case ACHIEVEMENTS:
+            case QUALIFICATIONS:
+                resumeSection = new StringListSection((List<String>)readCollection(dis, dis::readUTF));
+                break;
+            case EXPERIENCE:
+            case EDUCATION:
+                resumeSection = new BioSection((List<LifeStage>)readCollection(dis, () -> readLifeStage(dis)));
+                break;
+        }
+        return resumeSection;
     }
 
     @Override
@@ -132,19 +126,8 @@ public class FileFormatDataStream implements FileFormatStrategy {
         try (DataOutputStream dos = new DataOutputStream(os)) {
             dos.writeUTF(resume.getUuid());
             dos.writeUTF(resume.getFullName());
-            writeCollection(dos, resume.getContacts().entrySet(), (e) -> { dos.writeUTF(e.getKey().name()); writeString(dos, e.getValue());});
-            writeSection(dos, resume, Sections.OBJECTIVE);
-            writeSection(dos, resume, Sections.PERSONAL);
-            writeSection(dos, resume, Sections.ACHIEVEMENTS);
-            writeSection(dos, resume, Sections.QUALIFICATIONS);
-            writeSection(dos, resume, Sections.EXPERIENCE);
-            writeSection(dos, resume, Sections.EDUCATION);
-//            writeStringSection(dos, (StringSection)resume.getSection(Sections.OBJECTIVE));
-//            writeStringSection(dos, (StringSection)resume.getSection(Sections.PERSONAL));
-//            writeStringListSection(dos, (StringListSection)resume.getSection(Sections.ACHIEVEMENTS));
-//            writeStringListSection(dos, (StringListSection)resume.getSection(Sections.QUALIFICATIONS));
-//            writeBioSection(dos, (BioSection)resume.getSection(Sections.EXPERIENCE));
-//            writeBioSection(dos, (BioSection)resume.getSection(Sections.EDUCATION));
+            writeCollection(dos, resume.getContacts().entrySet(), (e) -> { dos.writeUTF(e.getKey().name()); writeString(dos, e.getValue()); });
+            writeCollection(dos, resume.getSections().entrySet(), (e) -> { dos.writeUTF(e.getKey().name()); writeSection(dos, resume, e.getKey()); });
         }
     }
 
@@ -154,16 +137,15 @@ public class FileFormatDataStream implements FileFormatStrategy {
             String uuid = dis.readUTF();
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
-            int size = dis.readInt();
-            for (int i = 0; i < size; i++) {
+            int contactCount = dis.readInt();
+            for (int i = 0; i < contactCount; i++) {
                 resume.setContact(Contacts.valueOf(dis.readUTF()), dis.readUTF());
             }
-            resume.setSection(Sections.OBJECTIVE, readStringSection(dis));
-            resume.setSection(Sections.PERSONAL, readStringSection(dis));
-            resume.setSection(Sections.ACHIEVEMENTS, readStringListSection(dis));
-            resume.setSection(Sections.QUALIFICATIONS, readStringListSection(dis));
-            resume.setSection(Sections.EXPERIENCE, readBioSection(dis));
-            resume.setSection(Sections.EDUCATION, readBioSection(dis));
+            int sectionCount = dis.readInt();
+            for (int i = 0; i < sectionCount; i++) {
+                Sections section = Sections.valueOf(dis.readUTF());
+                resume.setSection(section, readSection(dis, section));
+            }
             return resume;
         }
     }
