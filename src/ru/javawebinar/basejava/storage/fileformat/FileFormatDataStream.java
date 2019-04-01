@@ -8,7 +8,30 @@ import java.util.*;
 
 public class FileFormatDataStream implements FileFormatStrategy {
 
-    private interface WriteItem<T>{
+    @Override
+    public void doWrite(Resume resume, OutputStream os) throws IOException {
+        try (DataOutputStream dos = new DataOutputStream(os)) {
+            dos.writeUTF(resume.getUuid());
+            dos.writeUTF(resume.getFullName());
+            writeCollection(dos, resume.getContacts().entrySet(), (e) -> { dos.writeUTF(e.getKey().name()); writeString(dos, e.getValue()); });
+            writeCollection(dos, resume.getSections().entrySet(), (e) -> { dos.writeUTF(e.getKey().name()); writeSection(dos, resume, e.getKey()); });
+        }
+    }
+
+    @Override
+    public Resume doRead(InputStream is) throws IOException {
+        try (DataInputStream dis = new DataInputStream(is)) {
+            String uuid = dis.readUTF();
+            String fullName = dis.readUTF();
+            Resume resume = new Resume(uuid, fullName);
+            readResumeData(dis, (key) -> resume.setContact(Contacts.valueOf(key), readString(dis)));
+            readResumeData(dis, (key) -> resume.setSection(Sections.valueOf(key), readSection(dis, key)));
+            return resume;
+        }
+    }
+
+    @FunctionalInterface
+    private interface WriteItem<T> {
         void write(T t) throws IOException;
     }
 
@@ -19,29 +42,18 @@ public class FileFormatDataStream implements FileFormatStrategy {
         }
     }
 
-    private interface ReadItem<T>{
+    @FunctionalInterface
+    private interface ReadItem<T> {
         T read() throws IOException;
-        default Collection<T> collection() {
-            return new ArrayList<T>();
-        }
     }
 
     private <T> Collection<T> readCollection(DataInputStream dis, ReadItem<T> item) throws IOException {
-        Collection<T> collection = item.collection();
+        List<T> collection = new ArrayList<T>();
         int itemCount = dis.readInt();
         for (int i = 0; i < itemCount; i++) {
             collection.add(item.read());
         }
         return collection;
-    }
-
-    private void writeLocalDate(DataOutputStream dos, LocalDate localDate) throws IOException {
-        dos.writeInt(localDate.getYear());
-        dos.writeInt(localDate.getMonthValue());
-    }
-
-    private LocalDate readLocalDate(DataInputStream dis) throws IOException {
-        return LocalDate.of(dis.readInt(), dis.readInt(), 1);
     }
 
     private void writeString(DataOutputStream dos, String string) throws IOException {
@@ -51,6 +63,15 @@ public class FileFormatDataStream implements FileFormatStrategy {
     private String readString(DataInputStream dis) throws IOException {
         String string = dis.readUTF();
         return string.length() > 0 ? string : null;
+    }
+
+    private void writeLocalDate(DataOutputStream dos, LocalDate localDate) throws IOException {
+        dos.writeInt(localDate.getYear());
+        dos.writeInt(localDate.getMonthValue());
+    }
+
+    private LocalDate readLocalDate(DataInputStream dis) throws IOException {
+        return LocalDate.of(dis.readInt(), dis.readInt(), 1);
     }
 
     private void writeLifePeriod(DataOutputStream dos, LifePeriod lifePeriod) throws IOException {
@@ -102,8 +123,9 @@ public class FileFormatDataStream implements FileFormatStrategy {
         }
     }
 
-    private AbstractResumeSection readSection(DataInputStream dis, Sections section) throws IOException {
+    private AbstractResumeSection readSection(DataInputStream dis, String sectionName) throws IOException {
         AbstractResumeSection resumeSection = null;
+        Sections section = Sections.valueOf(sectionName);
         switch (section) {
             case OBJECTIVE:
             case PERSONAL:
@@ -121,32 +143,16 @@ public class FileFormatDataStream implements FileFormatStrategy {
         return resumeSection;
     }
 
-    @Override
-    public void doWrite(Resume resume, OutputStream os) throws IOException {
-        try (DataOutputStream dos = new DataOutputStream(os)) {
-            dos.writeUTF(resume.getUuid());
-            dos.writeUTF(resume.getFullName());
-            writeCollection(dos, resume.getContacts().entrySet(), (e) -> { dos.writeUTF(e.getKey().name()); writeString(dos, e.getValue()); });
-            writeCollection(dos, resume.getSections().entrySet(), (e) -> { dos.writeUTF(e.getKey().name()); writeSection(dos, resume, e.getKey()); });
-        }
+    @FunctionalInterface
+    private interface ReadData {
+        void read(String key) throws IOException;
     }
 
-    @Override
-    public Resume doRead(InputStream is) throws IOException {
-        try (DataInputStream dis = new DataInputStream(is)) {
-            String uuid = dis.readUTF();
-            String fullName = dis.readUTF();
-            Resume resume = new Resume(uuid, fullName);
-            int contactCount = dis.readInt();
-            for (int i = 0; i < contactCount; i++) {
-                resume.setContact(Contacts.valueOf(dis.readUTF()), dis.readUTF());
-            }
-            int sectionCount = dis.readInt();
-            for (int i = 0; i < sectionCount; i++) {
-                Sections section = Sections.valueOf(dis.readUTF());
-                resume.setSection(section, readSection(dis, section));
-            }
-            return resume;
+    private void readResumeData(DataInputStream dis, ReadData data) throws IOException {
+        int dataCount = dis.readInt();
+        for (int i = 0; i < dataCount; i++) {
+            String key = dis.readUTF();
+            data.read(key);
         }
     }
 
