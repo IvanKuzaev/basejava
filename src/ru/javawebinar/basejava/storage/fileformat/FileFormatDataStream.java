@@ -56,6 +56,19 @@ public class FileFormatDataStream implements FileFormatStrategy {
         return collection;
     }
 
+    @FunctionalInterface
+    private interface LoadData {
+        void load(String key) throws IOException;
+    }
+
+    private void readResumeData(DataInputStream dis, LoadData data) throws IOException {
+        int dataCount = dis.readInt();
+        for (int i = 0; i < dataCount; i++) {
+            String key = dis.readUTF();
+            data.load(key);
+        }
+    }
+
     private void writeString(DataOutputStream dos, String string) throws IOException {
         dos.writeUTF(Objects.requireNonNullElse(string, ""));
     }
@@ -141,19 +154,6 @@ public class FileFormatDataStream implements FileFormatStrategy {
                 break;
         }
         return resumeSection;
-    }
-
-    @FunctionalInterface
-    private interface ReadData {
-        void read(String key) throws IOException;
-    }
-
-    private void readResumeData(DataInputStream dis, ReadData data) throws IOException {
-        int dataCount = dis.readInt();
-        for (int i = 0; i < dataCount; i++) {
-            String key = dis.readUTF();
-            data.read(key);
-        }
     }
 
 }
