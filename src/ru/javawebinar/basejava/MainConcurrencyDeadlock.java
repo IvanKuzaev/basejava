@@ -29,8 +29,6 @@ class Postman implements Runnable {
 
     @Override
     public void run() {
-        Adress sender;
-        Adress receiver;
         Letter letter;
         synchronized(adressFrom) {
             letter = adressFrom.letterToSend;
@@ -68,5 +66,7 @@ public class MainConcurrencyDeadlock {
 
         threadPostman1.join();
         threadPostman2.join();
+
+        System.out.println("The letter are delivered. If you see this message, then deadlock has not occured.")
     }
 }
