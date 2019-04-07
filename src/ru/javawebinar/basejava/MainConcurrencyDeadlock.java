@@ -67,6 +67,6 @@ public class MainConcurrencyDeadlock {
         threadPostman1.join();
         threadPostman2.join();
 
-        System.out.println("The letter are delivered. If you see this message, then deadlock has not occured.");
+        System.out.println("The letters are delivered. If you see this message, then deadlock has not occured.");
     }
 }
