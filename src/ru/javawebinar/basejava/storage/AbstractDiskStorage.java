@@ -109,7 +109,7 @@ public abstract class AbstractDiskStorage<FSE /* extends File & Path */> extends
             }
             return resumes;
         } catch (IOException e) {
-            throw new StorageException("File error", null, e);
+            throw new StorageException("File error", e);
         }
     }
 
@@ -120,7 +120,7 @@ public abstract class AbstractDiskStorage<FSE /* extends File & Path */> extends
                 deleteInternal(fse);
             }
         } catch (IOException e) {
-            throw new StorageException("File delete error", null);
+            throw new StorageException("File delete error", e);
         }
     }
 

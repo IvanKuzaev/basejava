@@ -2,18 +2,23 @@ package ru.javawebinar.basejava;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class MainStreams {
     public static int minValue(int[] values) {
-//        int digitsCount[] = new int[10];
-//        return Arrays.stream(values).filter((e) -> digitsCount[e]++ == 0).sorted().reduce(0, (acc, e) -> 10 * acc + e);
         return Arrays.stream(values).distinct().sorted().reduce(0, (acc, e) -> 10 * acc + e);
     }
 
     public static List<Integer> oddOrEven(List<Integer> integers) {
-        int[] sum = new int[1];
-        return integers.stream().collect(Collectors.partitioningBy((v) -> { sum[0] += v; return v % 2 == 0;})).get(sum[0] % 2 == 1);
+        AtomicInteger sum = new AtomicInteger();
+        return integers
+                .stream()
+                .collect(Collectors.partitioningBy(v -> {
+                    sum.addAndGet(v);
+                    return v % 2 == 0;
+                }))
+                .get(sum.get() % 2 == 1);
     }
 
     public static void main(String[] args) {
