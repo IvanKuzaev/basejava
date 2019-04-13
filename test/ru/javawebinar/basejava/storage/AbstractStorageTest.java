@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.model.Contacts;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
@@ -74,6 +75,8 @@ public abstract class AbstractStorageTest {
     public void update() throws Exception {
         Resume resumeUpdated = storage.get(UUID_EXIST);
         resumeUpdated.setFullName("Ivanova Elena");
+        resumeUpdated.setContact(Contacts.EMAIL, "asd@fgh.jkl");
+        resumeUpdated.setContact(Contacts.HOMEPAGE, "www.asdfg.hjkl.com");
         storage.update(resumeUpdated);
         Assert.assertEquals("Testing method update(): resumes didn't match.", resumeUpdated, storage.get(UUID_EXIST));
     }
