@@ -1,13 +1,13 @@
 package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.model.Contacts;
-import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.sql.ProcessQueryResult;
 import ru.javawebinar.basejava.sql.SQLHelper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class SQLStorage implements Storage {
                 throw new NotExistStorageException(uuid);
             };
             ps.close();
-            insertUpdateContacts(con, resume);
+            sqlSaveContacts(con, resume);
             return null;
         });
     }
@@ -51,7 +51,7 @@ public class SQLStorage implements Storage {
             ps.setString(2, resume.getFullName());
             ps.execute();
             ps.close();
-            insertUpdateContacts(con, resume);
+            sqlSaveContacts(con, resume);
             return null;
         });
     }
@@ -61,9 +61,7 @@ public class SQLStorage implements Storage {
         ProcessQueryResult<Resume> pqr = (rs, uc) -> {
             if (rs.next()) {
                 Resume resume = new Resume(rs.getString("uuid").trim(), rs.getString("full_name").trim());
-                do {
-                    resume.setContact(Contacts.valueOf(rs.getString("type").trim()), rs.getString("value").trim());
-                } while (rs.next());
+                sqlLoadContacts(rs, resume);
                 return resume;
             } else {
                 throw new NotExistStorageException(uuid);
@@ -91,9 +89,7 @@ public class SQLStorage implements Storage {
             while (toContinue) {
                 String uuid = rs.getString("uuid");
                 Resume resume = new Resume(uuid.trim(), rs.getString("full_name").trim());
-                do {
-                    resume.setContact(Contacts.valueOf(rs.getString("type")), rs.getString("value"));
-                } while((toContinue = rs.next()) && rs.getString("uuid").equals(uuid));
+                toContinue = sqlLoadContacts(rs, resume);
                 listResume.add(resume);
             };
             return listResume;
@@ -110,18 +106,87 @@ public class SQLStorage implements Storage {
         return sqlHelper.executeSQLCommand(pqr, "SELECT COUNT(*) FROM resume;");
     }
 
-    private void insertUpdateContacts(Connection con, Resume resume) throws SQLException {
-        PreparedStatement ps;
-        ps = con.prepareStatement("INSERT INTO contact (resume_uuid, type, value) VALUES (?, ?, ?) ON CONFLICT (resume_uuid, type) DO UPDATE SET value=EXCLUDED.value;");
+    private boolean sqlLoadContacts(ResultSet rs, Resume resume) throws SQLException {
+        boolean toContinue;
         String uuid = resume.getUuid();
-        for (Map.Entry<Contacts, String> e : resume.getContacts().entrySet()) {
+        do {
+            resume.setContact(Contacts.valueOf(rs.getString("type")), rs.getString("value"));
+        } while((toContinue = rs.next()) && rs.getString("uuid").trim().equals(uuid));
+        return toContinue;
+    }
+
+    private void sqlSaveContacts(Connection con, Resume resume) throws SQLException {
+        String uuid = resume.getUuid();
+        try (PreparedStatement ps = con.prepareStatement("DELETE FROM contact WHERE resume_uuid=?;")) {
             ps.setString(1, uuid);
-            ps.setString(2, e.getKey().name());
-            ps.setString(3, e.getValue());
-            ps.addBatch();
+            ps.execute();
         }
-        ps.executeBatch();
-        ps.close();
+        try (PreparedStatement ps = con.prepareStatement("INSERT INTO contact (resume_uuid, type, value) VALUES (?, ?, ?);")) {
+            for (Map.Entry<Contacts, String> e : resume.getContacts().entrySet()) {
+                ps.setString(1, uuid);
+                ps.setString(2, e.getKey().name());
+                ps.setString(3, e.getValue());
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        }
+    }
+
+    private AbstractResumeSection stringToSection(Sections section, String string) {
+        AbstractResumeSection resumeSection = null;
+        switch (section) {
+            case OBJECTIVE:
+            case PERSONAL:
+                resumeSection = new StringSection(string);
+                break;
+            case ACHIEVEMENTS:
+            case QUALIFICATIONS:
+                String[] strings = string.split("\n");
+                resumeSection = new StringListSection(strings);
+                break;
+            case EXPERIENCE:
+            case EDUCATION:
+                break;
+        }
+        return resumeSection;
+    }
+
+    private String sectionToString(Sections section, Resume resume) {
+        String string = "";
+        switch (section) {
+            case OBJECTIVE:
+            case PERSONAL:
+                string = (String)resume.getSection(section).getData();
+                break;
+            case ACHIEVEMENTS:
+            case QUALIFICATIONS:
+                List<String> list = (List<String>)resume.getSection(section).getData();
+                for (int i = 0; i < list.size(); i++) {
+                    string += list.get(i) + "\n";
+                }
+                break;
+            case EXPERIENCE:
+            case EDUCATION:
+                break;
+        }
+        return string;
+    }
+
+    private void sqlSaveSections(Connection con, Resume resume) throws SQLException {
+        String uuid = resume.getUuid();
+        try (PreparedStatement ps = con.prepareStatement("DELETE FROM section WHERE resume_uuid=?;")) {
+            ps.setString(1, uuid);
+            ps.execute();
+        }
+        try (PreparedStatement ps = con.prepareStatement("INSERT INTO section (resume_uuid, type, value) VALUES (?, ?, ?);")) {
+            for (Map.Entry<Sections, AbstractResumeSection> e : resume.getSections().entrySet()) {
+                ps.setString(1, uuid);
+                ps.setString(2, e.getKey().name());
+                ps.setString(3, sectionToString(e.getKey(), resume));
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        }
     }
 
 }
