@@ -28,31 +28,29 @@ public class SQLStorage implements Storage {
     @Override
     public void update(Resume resume) {
         sqlHelper.<Void>executeSQLTransaction(con -> {
-            PreparedStatement ps;
             String uuid = resume.getUuid();
-            ps = con.prepareStatement("UPDATE resume SET full_name=? WHERE uuid=?;");
-            ps.setString(1, resume.getFullName());
-            ps.setString(2, uuid);
-            if (ps.executeUpdate() < 1) {
-                throw new NotExistStorageException(uuid);
-            };
-            ps.close();
-            sqlSaveContacts(con, resume);
-            return null;
+            try (PreparedStatement ps = con.prepareStatement("UPDATE resume SET full_name=? WHERE uuid=?;")) {
+                ps.setString(1, resume.getFullName());
+                ps.setString(2, uuid);
+                if (ps.executeUpdate() < 1) {
+                    throw new NotExistStorageException(uuid);
+                };
+                sqlSaveContacts(con, resume);
+                return null;
+            }
         });
     }
 
     @Override
     public void save(Resume resume) {
         sqlHelper.<Void>executeSQLTransaction(con -> {
-            PreparedStatement ps;
-            ps = con.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?, ?);");
-            ps.setString(1, resume.getUuid());
-            ps.setString(2, resume.getFullName());
-            ps.execute();
-            ps.close();
-            sqlSaveContacts(con, resume);
-            return null;
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?, ?);")) {
+                ps.setString(1, resume.getUuid());
+                ps.setString(2, resume.getFullName());
+                ps.execute();
+                sqlSaveContacts(con, resume);
+                return null;
+            }
         });
     }
 
