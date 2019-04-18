@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,6 @@ public class SQLStorage implements Storage {
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?, ?);")) {
                 ps.setString(1, resume.getUuid());
                 ps.setString(2, resume.getFullName());
-                ps.execute();
                 sqlSaveContacts(con, resume);
                 return null;
             }
@@ -104,13 +104,86 @@ public class SQLStorage implements Storage {
         return sqlHelper.executeSQLCommand(pqr, "SELECT COUNT(*) FROM resume;");
     }
 
-    private boolean sqlLoadContacts(ResultSet rs, Resume resume) throws SQLException {
-        boolean toContinue;
+    private int sqlSaveOrganization(Connection con, Organization organization) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement("INSERT INTO organization (title, description, weblink) VALUES (?, ?, ?, ?) ON CONFLICT DO UPDATE SET description=EXCLUDED.description, weblink=EXCLUDED.weblink;")) {
+            ps.setString(1, organization.getTitle());
+            ps.setString(2, organization.getDescription());
+            ps.setString(3, organization.getWebLink());
+            ps.execute();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            } else {
+                return -1;
+            }
+        }
+    }
+
+    private Organization sqlLoadOrganization(Connection con, int id) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM organization WHERE id=?;")) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Organization(rs.getString("title"), rs.getString("description"), rs.getString("weblink"));
+            } else {
+                return null;
+            }
+        }
+    }
+    private void sqlSaveBioSection(Connection con, Sections section, Resume resume) throws SQLException {
         String uuid = resume.getUuid();
-        do {
-            resume.setContact(Contacts.valueOf(rs.getString("type")), rs.getString("value"));
-        } while((toContinue = rs.next()) && rs.getString("uuid").trim().equals(uuid));
-        return toContinue;
+        String type = section.name();
+        try (PreparedStatement ps = con.prepareStatement("INSERT INTO biography (resume_uuid, type, organization_id, start_date, end_date, title, description) VALUES (?, ?, ?, ?, ?, ?, ?);")) {
+            for (LifeStage ls : (List<LifeStage>)resume.getSection(section).getData()) {
+                int organization_id = sqlSaveOrganization(con, ls.getOrganization());
+                for (LifePeriod lp : ls.getData()) {
+                    ps.setString(1, uuid);
+                    ps.setString(2, type);
+                    ps.setInt(3, organization_id);
+                    ps.setDate(4,Date.valueOf(lp.getStartDate()));
+                    ps.setDate(5, Date.valueOf(lp.getEndDate()));
+                    ps.setString(6, lp.getTitle());
+                    ps.setString(7, lp.getDescription());
+                    ps.addBatch();
+                }
+            }
+            ps.executeBatch();
+        }
+    }
+
+    private BioSection sqllLoadBioSection(Connection con, Sections section, Resume resume) throws SQLException {
+        String uuid = resume.getUuid();
+        String type = section.name();
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM biography WHERE resume_uuid=? AND type=? ORDER BY start_date DESC;")) {
+            ps.setString(1, uuid);
+            ps.setString(2, type);
+            ResultSet rs = ps.executeQuery();
+            int organizationId;
+            int organizationIdPrev = -1;
+            while (rs.next()) {
+                List<LifePeriod> llp = new ArrayList<>();
+                organizationId = rs.getInt("organization_id");
+                Organization organization = sqlLoadOrganization(con, organizationId);
+                LifePeriod lp = new LifePeriod(rs.getDate("start_date").toLocalDate(), rs.getDate("end_date").toLocalDate(), rs.getString("title"), rs.getString("description"));
+                llp.add(lp);
+
+            }
+
+        }
+        return null;
+    }
+
+    private boolean sqlLoadContacts(ResultSet rs, Resume resume) throws SQLException {
+        if (rs.getString("type") != null) {
+            boolean toContinue;
+            String uuid = resume.getUuid();
+            do {
+                resume.setContact(Contacts.valueOf(rs.getString("type")), rs.getString("value"));
+            } while ((toContinue = rs.next()) && rs.getString("uuid").trim().equals(uuid));
+            return toContinue;
+        } else {
+            return rs.next();
+        }
     }
 
     private void sqlSaveContacts(Connection con, Resume resume) throws SQLException {
