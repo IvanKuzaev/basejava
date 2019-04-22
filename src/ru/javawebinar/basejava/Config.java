@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Config {
-    private static final File PROPS = new File(".\\config\\resumes.properties");
+    private static final File PROPS = new File("c:\\basejava\\config\\resumes.properties");
 
     public static String storageDir;
     public static String dbUrl;

@@ -63,6 +63,10 @@ create table organization
 )
 ;
 
+create unique index organization_title_index
+  on organization (title)
+;
+
 alter table organization owner to postgres
 ;
 
@@ -90,7 +94,7 @@ create table biography
 alter table biography owner to postgres
 ;
 
-create unique index biography_uuid_type_index
-  on biography (resume_uuid, type)
-;
+--create unique index biography_uuid_type_index
+--  on biography (resume_uuid, type)
+--;
 

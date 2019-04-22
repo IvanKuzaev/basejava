@@ -9,30 +9,58 @@ public class ResumeTestData {
 
     public static Resume fillDummyResume(Resume resume, int dummy) {
 
-        resume.setContact(Contacts.MOBILE_PHONE, "+7(123) 456-78" + dummy);
-        resume.setContact(Contacts.SKYPE, "dummy.dummy" + dummy);
-        resume.setContact(Contacts.EMAIL, "dummy" + dummy + "@dummy.ru");
-//        resume.setContact(Contacts.HOMEPAGE, "http://dummy" + dummy + ".ru");
-        resume.setContact(Contacts.LINKEDIN, "https://www.linkedin.com/in/dummy" + dummy);
-//        resume.setContact(Contacts.GITHUB, "https://github.com/dummy" + dummy);
-        resume.setContact(Contacts.STACKOVERFLOW, "https://stackoverflow.com/users/dummy" + dummy);
+        if (Math.random() > 0.5) { resume.setContact(Contacts.MOBILE_PHONE, "+7(123) 456-78" + dummy); }
+        if (Math.random() > 0.5) { resume.setContact(Contacts.SKYPE, "dummy.dummy" + dummy); }
+        if (Math.random() > 0.5) { resume.setContact(Contacts.EMAIL, "dummy" + dummy + "@dummy.ru"); }
+        if (Math.random() > 0.5) { resume.setContact(Contacts.HOMEPAGE, "http://dummy" + dummy + ".ru"); }
+        if (Math.random() > 0.5) { resume.setContact(Contacts.LINKEDIN, "https://www.linkedin.com/in/dummy" + dummy); }
+        if (Math.random() > 0.5) { resume.setContact(Contacts.GITHUB, "https://github.com/dummy" + dummy); }
+        if (Math.random() > 0.5) { resume.setContact(Contacts.STACKOVERFLOW, "https://stackoverflow.com/users/dummy" + dummy); }
 
-//        resume.setSection(Sections.OBJECTIVE, new StringSection("Objective" + dummy));
-//        resume.setSection(Sections.PERSONAL, new StringSection("Personal data " + dummy));
-//        resume.setSection(Sections.ACHIEVEMENTS, new StringListSection("Achievement1_" + dummy, "Achievement2_" + dummy, "Achievement3_" + dummy));
-////        resume.setSection(Sections.QUALIFICATIONS, new StringListSection("Qualification1_" + dummy, "Qualification2_" + dummy, "Qualification3_" + dummy));
-////        resume.setSection(Sections.EXPERIENCE, new BioSection(
-////                new LifeStage(new Organization("Organization1_" + dummy, "http://organization1_" + dummy + ".com"),
-////                        new LifePeriod(LocalDate.of(2013, 10, 1), LocalDate.of(9999, 1, 1),"Position1_" + dummy, "content1_" + dummy)),
-////                new LifeStage(new Organization("Organization2_" + dummy, "http://organization2_" + dummy + ".com"),
-////                        new LifePeriod(LocalDate.of(2012, 10, 1), LocalDate.of(2009, 1, 1),"Position2_" + dummy, "content2_" + dummy))
-////        ));
-//        resume.setSection(Sections.EDUCATION, new BioSection(
-//                new LifeStage(new Organization("Institute1_" + dummy, "https://institute1_" + dummy + ".com"),
-//                        new LifePeriod(LocalDate.of(2013, 3, 1), LocalDate.of(2011, 5, 1),"study1_" + dummy, null)),
-//                new LifeStage(new Organization("Institute2_" + dummy, "https://institute2_" + dummy + ".com"),
-//                        new LifePeriod(LocalDate.of(2010, 3, 1), LocalDate.of(2005, 5, 1),"study2_" + dummy, null))
-//        ));
+        if (Math.random() > 0.5) { resume.setSection(Sections.OBJECTIVE, new StringSection("Objective" + dummy)); }
+        if (Math.random() > 0.5) { resume.setSection(Sections.PERSONAL, new StringSection("Personal data " + dummy)); }
+        if (Math.random() > 0.5) { resume.setSection(Sections.ACHIEVEMENTS, new StringListSection("Achievement1_" + dummy, "Achievement2_" + dummy, "Achievement3_" + dummy)); }
+        if (Math.random() > 0.5) { resume.setSection(Sections.QUALIFICATIONS, new StringListSection("Qualification1_" + dummy, "Qualification2_" + dummy, "Qualification3_" + dummy)); }
+
+        if (Math.random() > 0.5) {
+            resume.setSection(Sections.EXPERIENCE, new BioSection(
+                    new LifeStage(new Organization("Organization1_" + dummy, "https://organization1_" + dummy + ".com"),
+                            new LifePeriod(LocalDate.of(2013, 4, 1), LocalDate.of(2018, 3, 1), "Position1_" + dummy, "content1_" + dummy),
+                            new LifePeriod(LocalDate.of(2005, 9, 1), LocalDate.of(2010, 8, 1), "Position2_" + dummy, "content2_" + dummy),
+                            new LifePeriod(LocalDate.of(2001, 6, 1), LocalDate.of(2003, 5, 1), "Position3_" + dummy, "content3_" + dummy)
+                    ),
+                    new LifeStage(new Organization("Organization2_" + dummy, "https://organization2_" + dummy + ".com"),
+                            new LifePeriod(LocalDate.of(2012, 4, 1), LocalDate.of(2017, 3, 1), "Position1_" + dummy, "content1_" + dummy),
+                            new LifePeriod(LocalDate.of(2004, 9, 1), LocalDate.of(2009, 8, 1), "Position2_" + dummy, "content2_" + dummy),
+                            new LifePeriod(LocalDate.of(2000, 6, 1), LocalDate.of(2002, 5, 1), "Position3_" + dummy, "content3_" + dummy)
+                    ),
+                    new LifeStage(new Organization("Organization3_" + dummy, "https://organization3_" + dummy + ".com"),
+                            new LifePeriod(LocalDate.of(2012, 4, 1), LocalDate.of(2016, 3, 1), "Position1_" + dummy, "content1_" + dummy),
+                            new LifePeriod(LocalDate.of(2003, 9, 1), LocalDate.of(2008, 8, 1), "Position2_" + dummy, "content2_" + dummy),
+                            new LifePeriod(LocalDate.of(1999, 6, 1), LocalDate.of(2001, 5, 1), "Position3_" + dummy, "content3_" + dummy)
+                    )
+            ));
+        }
+
+        if (Math.random() > 0.5) {
+            resume.setSection(Sections.EDUCATION, new BioSection(
+                    new LifeStage(new Organization("Institute1_" + dummy, "https://institute1_" + dummy + ".com"),
+                            new LifePeriod(LocalDate.of(2013, 4, 1), LocalDate.of(2018, 3, 1), "study1_" + dummy, null),
+                            new LifePeriod(LocalDate.of(2005, 9, 1), LocalDate.of(2010, 8, 1), "study2_" + dummy, null),
+                            new LifePeriod(LocalDate.of(2001, 6, 1), LocalDate.of(2003, 5, 1), "study3_" + dummy, null)
+                    ),
+                    new LifeStage(new Organization("Institute2_" + dummy, "https://institute2_" + dummy + ".com"),
+                            new LifePeriod(LocalDate.of(2012, 4, 1), LocalDate.of(2017, 3, 1), "study1_" + dummy, null),
+                            new LifePeriod(LocalDate.of(2004, 9, 1), LocalDate.of(2009, 8, 1), "study2_" + dummy, null),
+                            new LifePeriod(LocalDate.of(2000, 6, 1), LocalDate.of(2002, 5, 1), "study3_" + dummy, null)
+                    ),
+                    new LifeStage(new Organization("Institute3_" + dummy, "https://institute3_" + dummy + ".com"),
+                            new LifePeriod(LocalDate.of(2012, 4, 1), LocalDate.of(2016, 3, 1), "study1_" + dummy, null),
+                            new LifePeriod(LocalDate.of(2003, 9, 1), LocalDate.of(2008, 8, 1), "study2_" + dummy, null),
+                            new LifePeriod(LocalDate.of(1999, 6, 1), LocalDate.of(2001, 5, 1), "study3_" + dummy, null)
+                    )
+            ));
+        }
 
         return resume;
     }

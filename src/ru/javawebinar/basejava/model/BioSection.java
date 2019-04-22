@@ -15,11 +15,12 @@ public class BioSection extends AbstractResumeSection {
     }
 
     public BioSection(LifeStage ... stages) {
-        this.stages = Arrays.asList(stages);
+        this(Arrays.asList(stages));
     }
 
     public BioSection(List<LifeStage> stages) {
         this.stages = stages;
+        this.stages.sort((o1, o2) -> { return o1.getOrganization().getTitle().compareTo(o2.getOrganization().getTitle()); });
     }
 
     @Override
