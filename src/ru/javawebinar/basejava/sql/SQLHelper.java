@@ -45,27 +45,6 @@ public class SQLHelper {
         this.<Void>executeSQLCommand((rs, uc) -> { return null; }, sql, args);
     }
 
-    public <T> T executeSQLTransaction(ProcessQueryResult<T> pqr, String sql, Object ... args) {
-        try (Connection con = connectionFactory.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            try {
-
-                for (int i = 0; i < args.length; i++) {
-                    ps.setObject(i + 1, args[i]);
-                }
-                ps.execute();
-                T result = pqr.process(ps.getResultSet(), ps.getUpdateCount());
-                con.commit();
-                return result;
-            } catch (SQLException e) {
-                con.rollback();
-                throw e;
-            }
-        } catch (SQLException e) {
-            throw toStorageException(e);
-        }
-    }
-
     public <T> T executeSQLTransaction(ConnectionHandle<T> ch) {
         try (Connection con = connectionFactory.getConnection()) {
             try {
