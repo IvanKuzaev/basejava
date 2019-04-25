@@ -75,16 +75,12 @@ public class SQLStorage implements Storage {
             try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM contact WHERE resume_uuid=? ORDER BY resume_uuid;")) {
                 ps.setString(1, uuid);
                 ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    loadContacts(rs, resume);
-                }
+                loadData(resume, rs, this::initContact);
             }
             try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM section WHERE resume_uuid=? ORDER BY resume_uuid;")) {
                 ps.setString(1, uuid);
                 ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    loadSections(rs, resume);
-                }
+                loadData(resume, rs, this::initSection);
             }
             return resume;
         });
@@ -112,13 +108,13 @@ public class SQLStorage implements Storage {
                     map.put(uuid, new Resume(uuid.trim(), rs.getString("full_name")));
                 }
             }
-            try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM contact ORDER BY resume_uuid;")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM contact ORDER BY resume_uuid;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
                 ResultSet rs = ps.executeQuery();
-                loadData(map, rs, this::loadContacts);
+                loadData(map, rs, this::initContact);
             }
-            try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM section ORDER BY resume_uuid;")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM section ORDER BY resume_uuid;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
                 ResultSet rs = ps.executeQuery();
-                loadData(map, rs, this::loadSections);
+                loadData(map, rs, this::initSection);
             }
             return new ArrayList<Resume>(map.values());
         });
@@ -134,16 +130,46 @@ public class SQLStorage implements Storage {
     }
 
     @FunctionalInterface
-    private interface LoadData {
-        boolean loadData(ResultSet rs, Resume resume) throws SQLException;
+    private interface InitResume {
+       void init(Resume resume, String type, String value);
     }
 
-    private void loadData(Map<String, Resume> map, ResultSet rs, LoadData ld) throws SQLException {
-        boolean toContinue = rs.next();
-        while (toContinue) {
+    private void initContact(Resume resume, String type, String value) {
+        resume.setContact(Contacts.valueOf(type), value);
+    }
+
+    private void initSection(Resume resume, String type, String value) {
+        Sections section = Sections.valueOf(type);
+        switch (section) {
+            case OBJECTIVE:
+            case PERSONAL:
+                resume.setSection(section, new StringSection(value));
+                break;
+            case QUALIFICATIONS:
+            case ACHIEVEMENTS:
+                resume.setSection(section, new StringListSection(value.split("\n")));
+                break;
+            case EXPERIENCE:
+            case EDUCATION:
+                //TODO: deserialization BioSection from string by JSON
+                break;
+        }
+    }
+
+    private void loadData(Map<String, Resume> map, ResultSet rs, InitResume ir) throws SQLException {
+        while (rs.next()) {
             String uuid = rs.getString("resume_uuid");
             Resume resume = map.get(uuid);
-            toContinue = ld.loadData(rs, resume);
+            do {
+                ir.init(resume, rs.getString("type"), rs.getString("value"));
+            } while (rs.next() && rs.getString("resume_uuid").trim().equals(uuid));
+            rs.previous();
+        }
+    }
+
+    private void loadData(Resume resume, ResultSet rs, InitResume ir) throws SQLException {
+        while (rs.next()) {
+            ir.init(resume, rs.getString("type"), rs.getString("value"));
         }
     }
 
@@ -166,15 +192,6 @@ public class SQLStorage implements Storage {
             }
             ps.executeBatch();
         }
-    }
-
-    private boolean loadContacts(ResultSet rs, Resume resume) throws SQLException {
-        boolean toContinue;
-        String uuid = resume.getUuid();
-        do {
-            resume.setContact(Contacts.valueOf(rs.getString("type")), rs.getString("value"));
-        } while ((toContinue = rs.next()) && rs.getString("resume_uuid").trim().equals(uuid));
-        return toContinue;
     }
 
     private void sqlDeleteSections(Connection con, Resume resume) throws SQLException {
@@ -210,26 +227,6 @@ public class SQLStorage implements Storage {
             }
             ps.executeBatch();
         }
-    }
-
-    private boolean loadSections(ResultSet rs, Resume resume) throws SQLException {
-        boolean toContinue;
-        String uuid = resume.getUuid();
-        do {
-            Sections section = Sections.valueOf(rs.getString("type"));
-            switch (section) {
-                case OBJECTIVE: case PERSONAL:
-                    resume.setSection(Sections.valueOf(rs.getString("type")), new StringSection(rs.getString("value")));
-                    break;
-                case QUALIFICATIONS: case ACHIEVEMENTS:
-                    resume.setSection(Sections.valueOf(rs.getString("type")), new StringListSection(rs.getString("value").split("\n")));
-                    break;
-                case EXPERIENCE: case EDUCATION:
-                    //TODO: deserialization BioSection from string by JSON
-                    break;
-            }
-        } while ((toContinue = rs.next()) && rs.getString("resume_uuid").trim().equals(uuid));
-        return toContinue;
     }
 
 }
