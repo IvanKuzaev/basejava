@@ -4,6 +4,7 @@ import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.sql.ProcessQueryResult;
 import ru.javawebinar.basejava.sql.SQLHelper;
+import ru.javawebinar.basejava.util.JsonParser;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -72,12 +73,12 @@ public class SQLStorage implements Storage {
                     throw new NotExistStorageException(uuid);
                 }
             }
-            try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM contact WHERE resume_uuid=? ORDER BY resume_uuid;")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM contact WHERE resume_uuid=?;")) {
                 ps.setString(1, uuid);
                 ResultSet rs = ps.executeQuery();
                 loadData(resume, rs, this::initContact);
             }
-            try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM section WHERE resume_uuid=? ORDER BY resume_uuid;")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM section WHERE resume_uuid=?;")) {
                 ps.setString(1, uuid);
                 ResultSet rs = ps.executeQuery();
                 loadData(resume, rs, this::initSection);
@@ -151,7 +152,7 @@ public class SQLStorage implements Storage {
                 break;
             case EXPERIENCE:
             case EDUCATION:
-                //TODO: deserialization BioSection from string by JSON
+                resume.setSection(section, JsonParser.read(value, BioSection.class));
                 break;
         }
     }
@@ -173,12 +174,16 @@ public class SQLStorage implements Storage {
         }
     }
 
-    private void sqlDeleteContacts(Connection con, Resume resume) throws SQLException {
+    private void sqlDeleteEntries(Connection con, Resume resume, String sql) throws SQLException {
         String uuid = resume.getUuid();
-        try (PreparedStatement ps = con.prepareStatement("DELETE FROM contact WHERE resume_uuid=?;")) {
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, uuid);
             ps.execute();
         }
+    }
+
+    private void sqlDeleteContacts(Connection con, Resume resume) throws SQLException {
+        sqlDeleteEntries(con, resume, "DELETE FROM contact WHERE resume_uuid=?;");
     }
 
     private void sqlSaveContacts(Connection con, Resume resume) throws SQLException {
@@ -195,11 +200,7 @@ public class SQLStorage implements Storage {
     }
 
     private void sqlDeleteSections(Connection con, Resume resume) throws SQLException {
-        String uuid = resume.getUuid();
-        try (PreparedStatement ps = con.prepareStatement("DELETE FROM section WHERE resume_uuid=?;")) {
-            ps.setString(1, uuid);
-            ps.execute();
-        }
+        sqlDeleteEntries(con, resume, "DELETE FROM section WHERE resume_uuid=?;");
     }
 
     private void sqlSaveSections(Connection con, Resume resume) throws SQLException {
@@ -210,17 +211,20 @@ public class SQLStorage implements Storage {
                 ps.setString(1, uuid);
                 ps.setString(2, section.name());
                 switch (section) {
-                    case OBJECTIVE: case PERSONAL:
+                    case OBJECTIVE:
+                    case PERSONAL:
                         ps.setString(3, (String)resume.getSection(section).getData());
                         break;
-                    case QUALIFICATIONS: case ACHIEVEMENTS:
+                    case QUALIFICATIONS:
+                    case ACHIEVEMENTS:
                         List<String> list = (List<String>)resume.getSection(section).getData();
                         String[] strings = new String[list.size()];
                         list.<String>toArray(strings);
                         ps.setString(3, String.join("\n", strings));
                         break;
-                    case EXPERIENCE: case EDUCATION:
-                        //TODO: serialization BioSection into string by JSON
+                    case EXPERIENCE:
+                    case EDUCATION:
+                        ps.setString(3, JsonParser.write(resume.getSection(section)));
                         break;
                 }
                 ps.addBatch();
