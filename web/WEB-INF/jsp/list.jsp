@@ -11,6 +11,7 @@
 <body>
     <jsp:include page="/WEB-INF/jsp/header.jsp" />
     <section>
+        <a href="resumes?action=create">Новое резюме</a>
         <table border="1" cellpadding="8" cellspacing="0">
             <tr>
                 <th>Имя</th>
@@ -18,13 +19,13 @@
                 <th></th>
                 <th></th>
             </tr>
-            <c:forEach items="${resumes}" var="resume">
-            <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" />
+            <c:forEach var="resume" items="${resumes}">
+                <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" />
                 <tr>
                     <td><a href="resumes?uuid=${resume.uuid}&action=view">${resume.fullName}</a></td>
                     <td><%=ResumeServlet.toHTML(Contacts.EMAIL, resume.getContact(Contacts.EMAIL))%></td>
-                    <td><a href="resumes?uuid=${resume.uuid}&action=delete"><img src="/resumes-webapp/img/delete.png"></a></td>
-                    <td><a href="resumes?uuid=${resume.uuid}&action=edit"><img src="/resumes-webapp/img/pencil.png"></a></td>
+                    <td><a href="resumes?uuid=${resume.uuid}&action=delete"><img src="/resumes-webapp/img/delete.png" title="удалить резюме"></a></td>
+                    <td><a href="resumes?uuid=${resume.uuid}&action=edit"><img src="/resumes-webapp/img/pencil.png" title="редактировать резюме"></a></td>
                 </tr>
             </c:forEach>
         </table>

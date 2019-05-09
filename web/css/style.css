@@ -1,5 +1,5 @@
 section {
-    width: 900px;
+    width: 1000px;
     margin: auto;
     background-color: #A6C9E2;
 }
@@ -40,6 +40,10 @@ dd {
 }
 */
 
+.pos {
+    width: 350px;
+}
+
 select {
     width: 250px;
 }
@@ -58,6 +62,7 @@ li {
 
 label {
     padding-right: 10px;
+    width: 150px;
 }
 
 fieldset {

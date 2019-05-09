@@ -75,13 +75,11 @@ public class SQLStorage implements Storage {
             }
             try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM contact WHERE resume_uuid=?;")) {
                 ps.setString(1, uuid);
-                ResultSet rs = ps.executeQuery();
-                loadData(resume, rs, this::initContact);
+                loadData(resume, ps, this::initContact);
             }
             try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM section WHERE resume_uuid=?;")) {
                 ps.setString(1, uuid);
-                ResultSet rs = ps.executeQuery();
-                loadData(resume, rs, this::initSection);
+                loadData(resume, ps, this::initSection);
             }
             return resume;
         });
@@ -110,12 +108,10 @@ public class SQLStorage implements Storage {
                 }
             }
             try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM contact ORDER BY resume_uuid;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
-                ResultSet rs = ps.executeQuery();
-                loadData(map, rs, this::initContact);
+                loadData(map, ps, this::initContact);
             }
             try (PreparedStatement ps = con.prepareStatement("SELECT resume_uuid, type, value FROM section ORDER BY resume_uuid;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
-                ResultSet rs = ps.executeQuery();
-                loadData(map, rs, this::initSection);
+                loadData(map, ps, this::initSection);
             }
             return new ArrayList<Resume>(map.values());
         });
@@ -157,7 +153,8 @@ public class SQLStorage implements Storage {
         }
     }
 
-    private void loadData(Map<String, Resume> map, ResultSet rs, InitResume ir) throws SQLException {
+    private void loadData(Map<String, Resume> map, PreparedStatement ps, InitResume ir) throws SQLException {
+        ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             String uuid = rs.getString("resume_uuid");
             Resume resume = map.get(uuid);
@@ -168,7 +165,8 @@ public class SQLStorage implements Storage {
         }
     }
 
-    private void loadData(Resume resume, ResultSet rs, InitResume ir) throws SQLException {
+    private void loadData(Resume resume, PreparedStatement ps, InitResume ir) throws SQLException {
+        ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             ir.init(resume, rs.getString("type"), rs.getString("value"));
         }
