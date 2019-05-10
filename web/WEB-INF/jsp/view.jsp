@@ -1,6 +1,6 @@
 <%@ page import="ru.javawebinar.basejava.model.LifePeriod" %>
 <%@ page import="ru.javawebinar.basejava.model.Sections" %>
-<%@ page import="ru.javawebinar.basejava.web.ResumeServlet" %>
+<%@ page import="ru.javawebinar.basejava.util.htmlUtil" %>
 <%@ page import="java.util.Comparator" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -14,11 +14,11 @@
 <body>
     <jsp:include page="/WEB-INF/jsp/header.jsp" />
     <section>
-        <h2>${resume.fullName}&nbsp;<a href="resumes?action=edit&uuid=${resume.uuid}"><img src="/img/pencil.png"></a></h2>
+        <h2>${resume.fullName}&nbsp;<a href="resumes?action=edit&uuid=${resume.uuid}"><img src="/resumes-webapp/img/pencil.png"></a></h2>
         <p>
             <c:forEach var="contactEntry" items="${resume.contacts}">
                 <jsp:useBean id="contactEntry" type="java.util.Map.Entry<ru.javawebinar.basejava.model.Contacts, java.lang.String>" />
-                ${contactEntry.key.title} : <%=ResumeServlet.toHTML(contactEntry.getKey(), contactEntry.getValue())%><br>
+                ${contactEntry.key.title} : <%=htmlUtil.contactToHTML(contactEntry.getKey(), contactEntry.getValue())%><br>
             </c:forEach>
         </p>
         <p>
@@ -43,13 +43,13 @@
                             <a href="${organization.webLink}"><h4>${organization.title}</h4></a>
                             <c:set var="lifePeriods" value="${lifeStage.data}" />
                             <jsp:useBean id="lifePeriods" type="java.util.List<ru.javawebinar.basejava.model.LifePeriod>" />
-                            <% lifePeriods.sort(Comparator.comparing(LifePeriod::getStartDate).reversed()); %>
+<%--                            <% lifePeriods.sort(Comparator.comparing(LifePeriod::getStartDate).reversed()); %> --%>
                             <table>
                                 <c:forEach var="lifePeriod" items="${lifePeriods}">
                                     <jsp:useBean id="lifePeriod" type="ru.javawebinar.basejava.model.LifePeriod" />
                                     <tr>
                                         <td width="150px" valign="top">
-                                            <%=ResumeServlet.briefDate(lifePeriod.getStartDate())%> - <%=ResumeServlet.briefDate(lifePeriod.getEndDate())%>
+                                            <%=htmlUtil.briefDate(lifePeriod.getStartDate())%> - <%=htmlUtil.briefDate(lifePeriod.getEndDate())%>
                                         </td>
                                         <td>
                                             <b>${lifePeriod.title}</b><br>

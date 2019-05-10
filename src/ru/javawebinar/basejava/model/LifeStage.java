@@ -19,7 +19,7 @@ public class LifeStage  implements Serializable {
     public LifeStage(Organization organization, List<LifePeriod> periods) {
         this.organization = organization;
         this.periods = periods;
-        this.periods.sort((o1, o2) -> { return o1.getStartDate().compareTo(o2.getStartDate()); });
+        this.periods.sort((o1, o2) -> { return o2.getStartDate().compareTo(o1.getStartDate()); });
     }
 
     public LifeStage(Organization organization, LifePeriod... periods) {

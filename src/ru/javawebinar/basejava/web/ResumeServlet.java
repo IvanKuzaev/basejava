@@ -10,9 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static ru.javawebinar.basejava.ResumeTestData.fillDummyResume;
 
@@ -24,30 +23,6 @@ public class ResumeServlet extends HttpServlet {
             new Resume("uuid02", "Petrov Vladimir"),
             new Resume("uuid01", "Sidorova Elena"),
     };
-
-    public static String toHTML(Contacts contact, String value) {
-        if (value != null) {
-            switch (contact) {
-                case SKYPE:
-                    return "<a href='skype:" + value + "'>" + value + "</a>";
-                case EMAIL:
-                    return "<a href='mailto:" + value + "'>" + value + "</a>";
-            }
-            return value;
-        } else {
-            return "";
-        }
-    }
-
-    public static String briefDate(LocalDate ld) {
-        int m = ld.getMonthValue();
-        int y = ld.getYear();
-        if (y < 9999) {
-            return (m < 10 ? "0" : "") + m + "/" + y;
-        } else {
-            return "сейчас";
-        }
-    }
 
     @Override
     public void init() {
@@ -73,39 +48,24 @@ public class ResumeServlet extends HttpServlet {
                 resume.setContact(contactType, value);
             }
         }
-        String objective = request.getParameter("OBJECTIVE").trim();
-        if (objective != null && objective.length() > 0) {
-            resume.setSection(Sections.OBJECTIVE, new StringSection(objective));
-        }
-        String personal = request.getParameter("PERSONAL").trim();
-        if (personal != null && personal.length() > 0) {
-            resume.setSection(Sections.PERSONAL, new StringSection(personal));
-        }
-        String[] achievements = request.getParameterValues("ACHIEVEMENTS");
-        if (achievements != null && achievements.length > 0) {
-            resume.setSection(Sections.ACHIEVEMENTS, new StringListSection(achievements));
-        }
-        String[] qualifications = request.getParameterValues("QUALIFICATIONS");
-        if (qualifications != null && qualifications.length > 0) {
-            resume.setSection(Sections.QUALIFICATIONS, new StringListSection(qualifications));
-        }
-        String[] experience = request.getParameterValues("EXPERIENCE");
-        if (experience != null && experience.length > 0) {
-            List<LifeStage> lss = new ArrayList<>();
-            for (String string : experience) {
-                LifeStage lifeStage = JsonParser.<LifeStage>read(string, LifeStage.class);
-                lss.add(lifeStage);
+        for (Sections sectionType : Sections.values()) {
+            String[] sectionStrings = request.getParameterValues(sectionType.name());
+            if (sectionStrings != null) {
+                switch (sectionType) {
+                    case OBJECTIVE:
+                    case PERSONAL:
+                        resume.setSection(sectionType, new StringSection(sectionStrings[0]));
+                        break;
+                    case ACHIEVEMENTS:
+                    case QUALIFICATIONS:
+                        resume.setSection(sectionType, new StringListSection(sectionStrings));
+                        break;
+                    case EXPERIENCE:
+                    case EDUCATION:
+                        resume.setSection(sectionType, new BioSection(Arrays.stream(sectionStrings).map((string) -> { return JsonParser.<LifeStage>read(string, LifeStage.class);}).collect(Collectors.toList())));
+                        break;
+                }
             }
-            resume.setSection(Sections.EXPERIENCE, new BioSection(lss));
-        }
-        String[] education = request.getParameterValues("EDUCATION");
-        if (education != null && education.length > 0) {
-            List<LifeStage> lss = new ArrayList<>();
-            for (String string : education) {
-                LifeStage lifeStage = JsonParser.<LifeStage>read(string, LifeStage.class);
-                lss.add(lifeStage);
-            }
-            resume.setSection(Sections.EDUCATION, new BioSection(lss));
         }
         String sqlAction = request.getParameter("action");
         switch(sqlAction) {
