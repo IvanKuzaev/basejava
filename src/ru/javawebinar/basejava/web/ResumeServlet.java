@@ -17,15 +17,16 @@ import static ru.javawebinar.basejava.ResumeTestData.fillDummyResume;
 
 public class ResumeServlet extends HttpServlet {
     private SQLStorage storage;
-    private Resume[] resumes = {
-            new Resume("uuid04", "Ivanov Sergei"),
-            new Resume("uuid03", "Petrov Vladimir"),
-            new Resume("uuid02", "Petrov Vladimir"),
-            new Resume("uuid01", "Sidorova Elena"),
-    };
 
     @Override
     public void init() {
+        Resume[] resumes = {
+                new Resume("uuid05", "Nazarova Olga"),
+                new Resume("uuid04", "Ivanov Sergei"),
+                new Resume("uuid03", "Petrov Vladimir"),
+                new Resume("uuid02", "Petrov Vladimir"),
+                new Resume("uuid01", "Sidorova Elena"),
+        };
         org.postgresql.Driver driver = new org.postgresql.Driver();//needs to load jbdc driver, otherwise it don't work in tomcat
         storage = new SQLStorage(Config.dbUrl, Config.dbUser, Config.dbPassword);
         storage.clear();
@@ -40,7 +41,6 @@ public class ResumeServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid").trim();
         String fullName = request.getParameter("fullName");
-        String[] sections = request.getParameterValues("section");
         Resume resume = new Resume(uuid, fullName);
         for (Contacts contactType : Contacts.values()) {
             String value = request.getParameter(contactType.name());
@@ -54,7 +54,9 @@ public class ResumeServlet extends HttpServlet {
                 switch (sectionType) {
                     case OBJECTIVE:
                     case PERSONAL:
-                        resume.setSection(sectionType, new StringSection(sectionStrings[0]));
+                        if (sectionStrings[0].trim().length() > 0) {
+                            resume.setSection(sectionType, new StringSection(sectionStrings[0]));
+                        }
                         break;
                     case ACHIEVEMENTS:
                     case QUALIFICATIONS:

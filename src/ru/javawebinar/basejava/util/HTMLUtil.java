@@ -3,7 +3,7 @@ package ru.javawebinar.basejava.util;
 import ru.javawebinar.basejava.model.Contacts;
 import java.time.LocalDate;
 
-public class htmlUtil {
+public class HTMLUtil {
 
     public static String contactToHTML(Contacts contact, String value) {
         if (value != null) {

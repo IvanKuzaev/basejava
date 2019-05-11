@@ -136,21 +136,7 @@ public class SQLStorage implements Storage {
     }
 
     private void initSection(Resume resume, String type, String value) {
-        Sections section = Sections.valueOf(type);
-        switch (section) {
-            case OBJECTIVE:
-            case PERSONAL:
-                resume.setSection(section, new StringSection(value));
-                break;
-            case QUALIFICATIONS:
-            case ACHIEVEMENTS:
-                resume.setSection(section, new StringListSection(value.split("\n")));
-                break;
-            case EXPERIENCE:
-            case EDUCATION:
-                resume.setSection(section, JsonParser.read(value, BioSection.class));
-                break;
-        }
+        resume.setSection(Sections.valueOf(type), JsonParser.read(value, AbstractResumeSection.class));
     }
 
     private void loadData(Map<String, Resume> map, PreparedStatement ps, InitResume ir) throws SQLException {
@@ -207,24 +193,8 @@ public class SQLStorage implements Storage {
             for (Map.Entry<Sections, AbstractResumeSection> e : resume.getSections().entrySet()) {
                 Sections section = e.getKey();
                 ps.setString(1, uuid);
-                ps.setString(2, section.name());
-                switch (section) {
-                    case OBJECTIVE:
-                    case PERSONAL:
-                        ps.setString(3, (String)resume.getSection(section).getData());
-                        break;
-                    case QUALIFICATIONS:
-                    case ACHIEVEMENTS:
-                        List<String> list = (List<String>)resume.getSection(section).getData();
-                        String[] strings = new String[list.size()];
-                        list.<String>toArray(strings);
-                        ps.setString(3, String.join("\n", strings));
-                        break;
-                    case EXPERIENCE:
-                    case EDUCATION:
-                        ps.setString(3, JsonParser.write(resume.getSection(section)));
-                        break;
-                }
+                ps.setString(2, e.getKey().name());
+                ps.setString(3, JsonParser.write(e.getValue(), AbstractResumeSection.class));
                 ps.addBatch();
             }
             ps.executeBatch();

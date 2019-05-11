@@ -1,7 +1,5 @@
-<%@ page import="ru.javawebinar.basejava.model.LifePeriod" %>
 <%@ page import="ru.javawebinar.basejava.model.Sections" %>
-<%@ page import="ru.javawebinar.basejava.util.htmlUtil" %>
-<%@ page import="java.util.Comparator" %>
+<%@ page import="ru.javawebinar.basejava.util.HTMLUtil" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
@@ -13,12 +11,12 @@
 </head>
 <body>
     <jsp:include page="/WEB-INF/jsp/header.jsp" />
-    <section>
-        <h2>${resume.fullName}&nbsp;<a href="resumes?action=edit&uuid=${resume.uuid}"><img src="/resumes-webapp/img/pencil.png"></a></h2>
-        <p>
+    <section style="padding:25px">
+        <h2>${resume.fullName}&nbsp;<a href="resumes?action=edit&uuid=${resume.uuid}"><img src="img/pencil.png"></a></h2>
+        <p class="viewBlock">
             <c:forEach var="contactEntry" items="${resume.contacts}">
                 <jsp:useBean id="contactEntry" type="java.util.Map.Entry<ru.javawebinar.basejava.model.Contacts, java.lang.String>" />
-                ${contactEntry.key.title} : <%=htmlUtil.contactToHTML(contactEntry.getKey(), contactEntry.getValue())%><br>
+                <span class="labelTitle">${contactEntry.key.title}</span> : <%=HTMLUtil.contactToHTML(contactEntry.getKey(), contactEntry.getValue())%><br>
             </c:forEach>
         </p>
         <p>
@@ -27,7 +25,7 @@
                 <h3>${sectionEntry.key.title}</h3>
                 <c:choose>
                     <c:when test="${sectionEntry.key==Sections.OBJECTIVE || sectionEntry.key==Sections.PERSONAL}">
-                        <p>${sectionEntry.value.data}</p>
+                        <p class="viewBlock">${sectionEntry.value.data}</p>
                     </c:when>
                     <c:when test="${sectionEntry.key==Sections.ACHIEVEMENTS || sectionEntry.key==Sections.QUALIFICATIONS}">
                         <ul>
@@ -43,13 +41,12 @@
                             <a href="${organization.webLink}"><h4>${organization.title}</h4></a>
                             <c:set var="lifePeriods" value="${lifeStage.data}" />
                             <jsp:useBean id="lifePeriods" type="java.util.List<ru.javawebinar.basejava.model.LifePeriod>" />
-<%--                            <% lifePeriods.sort(Comparator.comparing(LifePeriod::getStartDate).reversed()); %> --%>
-                            <table>
+                            <table style="padding-left:25px">
                                 <c:forEach var="lifePeriod" items="${lifePeriods}">
                                     <jsp:useBean id="lifePeriod" type="ru.javawebinar.basejava.model.LifePeriod" />
                                     <tr>
                                         <td width="150px" valign="top">
-                                            <%=htmlUtil.briefDate(lifePeriod.getStartDate())%> - <%=htmlUtil.briefDate(lifePeriod.getEndDate())%>
+                                            <%=HTMLUtil.briefDate(lifePeriod.getStartDate())%> - <%=HTMLUtil.briefDate(lifePeriod.getEndDate())%>
                                         </td>
                                         <td>
                                             <b>${lifePeriod.title}</b><br>

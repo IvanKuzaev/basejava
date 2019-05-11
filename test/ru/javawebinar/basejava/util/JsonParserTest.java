@@ -2,6 +2,7 @@ package ru.javawebinar.basejava.util;
 
 import org.junit.Assert;
 import org.junit.Test;
+import ru.javawebinar.basejava.model.AbstractResumeSection;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.model.StringListSection;
 import ru.javawebinar.basejava.model.StringSection;
@@ -32,6 +33,14 @@ public class JsonParserTest /* extends AbstractStorageTest */ {
         StringListSection stringListSectionBefore = new StringListSection("string1", "string2", "string3");
         String stringListSectionBeforeJSON = JsonParser.write(stringListSectionBefore);
         StringListSection stringListSectionAfter = JsonParser.read(stringListSectionBeforeJSON, StringListSection.class);
+        Assert.assertEquals(stringListSectionBefore, stringListSectionAfter);
+    }
+
+    @Test
+    public void testStringListSectionWithInheritance() {
+        AbstractResumeSection stringListSectionBefore = new StringListSection("string1", "string2", "string3");
+        String stringListSectionBeforeJSON = JsonParser.write(stringListSectionBefore, AbstractResumeSection.class);
+        AbstractResumeSection stringListSectionAfter = JsonParser.read(stringListSectionBeforeJSON, AbstractResumeSection.class);
         Assert.assertEquals(stringListSectionBefore, stringListSectionAfter);
     }
 

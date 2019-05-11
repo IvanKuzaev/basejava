@@ -1,5 +1,5 @@
 <%@ page import="ru.javawebinar.basejava.model.Contacts" %>
-<%@ page import="ru.javawebinar.basejava.util.htmlUtil" %>
+<%@ page import="ru.javawebinar.basejava.util.HTMLUtil" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
@@ -23,9 +23,9 @@
                 <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" />
                 <tr>
                     <td><a href="resumes?uuid=${resume.uuid}&action=view">${resume.fullName}</a></td>
-                    <td><%=htmlUtil.contactToHTML(Contacts.EMAIL, resume.getContact(Contacts.EMAIL))%></td>
-                    <td><a href="resumes?uuid=${resume.uuid}&action=delete"><img src="/resumes-webapp/img/delete.png" title="удалить резюме"></a></td>
-                    <td><a href="resumes?uuid=${resume.uuid}&action=edit"><img src="/resumes-webapp/img/pencil.png" title="редактировать резюме"></a></td>
+                    <td><%=HTMLUtil.contactToHTML(Contacts.EMAIL, resume.getContact(Contacts.EMAIL))%></td>
+                    <td><a href="resumes?uuid=${resume.uuid}&action=delete"><img src="img/delete.png" title="удалить резюме"></a></td>
+                    <td><a href="resumes?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png" title="редактировать резюме"></a></td>
                 </tr>
             </c:forEach>
         </table>

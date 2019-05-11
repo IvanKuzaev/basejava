@@ -56,8 +56,8 @@ function jsonOrganization(fieldset) {
         var period = {};
         period.startDate = dateObject(tr.firstElementChild.firstElementChild.firstElementChild.value);
         period.endDate = dateObject(tr.firstElementChild.firstElementChild.nextElementSibling.firstElementChild.value);
-        period.title = tr.firstElementChild.nextElementSibling.firstElementChild.firstElementChild.value;
-        period.description = tr.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling.nextElementSibling.firstElementChild.value;
+        period.title = tr.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling.value;
+        period.description = tr.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.value;
         periods[periods.length] = period;
         tr = tr.nextElementSibling;
     }
@@ -84,7 +84,7 @@ function removeOrganization(name) {
 
 function addPosition(name) {
     container = document.getElementById(name);
-    addPosition0(container);
+    addPosition0(container.firstElementChild);
 }
 
 function addPosition0(container) {
@@ -94,7 +94,8 @@ function addPosition0(container) {
 
 function removePosition(trName) {
     tr = document.getElementById(trName);
-    removePosition0(tr);
+    if (tr.parentNode.children.length > 1)
+        removePosition0(tr);
 }
 
 function removePosition0(tr) {
@@ -106,14 +107,14 @@ function createPosition() {
     tr.id = 'tr' + positions;
 
     var td1 = document.createElement('td');
-    td1.width = '350px';
+    td1.width = '400px';
     td1.vAlign = 'top';
     tr.appendChild(td1);
 
     var label1 = document.createElement('label');
-    label1.innerHTML = 'с <input type="date" required>';
+    label1.innerHTML = 'с<input type="date" required>';
     var label2 = document.createElement('label');
-    label2.innerHTML = 'по <input type="date" required>';
+    label2.innerHTML = 'по<input type="date" required>';
     td1.appendChild(label1);
     td1.appendChild(label2);
 
@@ -121,21 +122,33 @@ function createPosition() {
     tr.appendChild(td2);
 
     var label3 = document.createElement('label');
-    label3.innerHTML = 'позиция <input type="text" placeholder="введите позицию" required>';
+    label3.className = 'labelTitle';
+    label3.innerHTML = 'позиция';
+    var input3 = document.createElement('input');
+    input3.type = 'text';
+    input3.placeholder = 'введите позицию';
+    input3.required = true;
     var br = document.createElement('br');
     var label4 = document.createElement('label');
-    label4.innerHTML = 'описание <input type="text" placeholder="введите описание">';
+    label4.className = 'labelTitle';
+    label4.innerHTML = 'описание';
+    var input4 = document.createElement('input');
+    input4.type = 'text';
+    input4.placeholder = 'введите описание';
     td2.appendChild(label3);
+    td2.appendChild(input3);
     td2.appendChild(br);
     td2.appendChild(label4);
+    td2.appendChild(input4);
 
     var td3 = document.createElement('td');
     td3.vAlign = 'middle';
     td3.align = 'left';
-    td3.innerHTML = "<img src='/resumes-webapp/img/delete.png' onclick='removePosition(\"tr" + positions + "\")'>";
+    td3.innerHTML = "<img src='img/delete.png' onclick='removePosition(\"tr" + positions + "\")'>";
     tr.appendChild(td3);
 
     positions++;
+
     return tr;
 }
 
@@ -149,9 +162,9 @@ function addOrganization(name) {
     fieldset.appendChild(legend);
 
     var string = '';
-    string += '<img src="/resumes-webapp/img/delete.png" title="удалить организацию" onclick="removeOrganization(\'fieldset' + organizations + '\')">';
-    string += '<label>Организация <input type="text" required></label>';
-    string += '<label>Сайт <input type="text"></label>';
+    string += '<img src="img/delete.png" title="удалить организацию" onclick="removeOrganization(\'fieldset' + organizations + '\')">';
+    string += '<label>Организация<input type="text" required></label>';
+    string += '<label>Сайт<input type="text"></label>';
     string += '<button type="button" onclick="addPosition(\'table_' + organizations + '\')">Новая позиция</button>';
     legend.innerHTML = string;
 
@@ -164,6 +177,8 @@ function addOrganization(name) {
 
     var tr = createPosition();
     tbody.appendChild(tr);
+
+    organizations++;
 
     container.insertBefore(fieldset, container.firstChild);
 }

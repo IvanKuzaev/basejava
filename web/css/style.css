@@ -21,29 +21,6 @@ footer {
     text-align: center;
 }
 
-/*
-dl {
-    background: none repeat scroll 0 0 #FAFAFA;
-    margin: 8px 0;
-    padding: 0;
-}
-
-dt {
-    display: inline-block;
-    width: 170px;
-}
-
-dd {
-    display: inline-block;
-    margin-left: 8px;
-    vertical-align: top;
-}
-*/
-
-.pos {
-    width: 350px;
-}
-
 select {
     width: 250px;
 }
@@ -61,8 +38,7 @@ li {
 }
 
 label {
-    padding-right: 10px;
-    width: 350px;
+    display: inline-block;
 }
 
 fieldset {
@@ -92,4 +68,13 @@ a[href^="https://www.linkedin.com"] {
 a[href*="github."] {
     padding-left: 20px !important;
     background: url(../img/gh.png) no-repeat center left;
+}
+
+.labelTitle {
+    display: inline-block;
+    width: 100px;
+}
+
+.viewBlock {
+    padding-left: 40px;
 }
